@@ -6,6 +6,7 @@ import { ComponentInstanceIcon, GitHubLogoIcon } from "@radix-ui/react-icons";
 import { ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import Image from "next/image";
 
 export const Hero = () => {
   return (
@@ -26,7 +27,7 @@ export const Hero = () => {
           , currently working / studying at{" "}
           <Link href="https://zone01rouennormandie.org/">
             <Code className="inline-flex items-center gap-1">
-              <img
+              <Image
                 src="https://zone01rouennormandie.org/wp-content/uploads/2024/02/ZONE01-ROUEN-NORMANDIE-HORIZON-FOND-NOIR-BONNE-TAILLE.png"
                 style={{ width: 20, height: "auto" }}
                 alt="Zone01 image"
@@ -38,7 +39,7 @@ export const Hero = () => {
         </p>
       </div>
       <div className="flex-[2] max-md:m-auto ml-auto">
-        <img
+        <Image
           src={imageLouis.src}
           className="w-full h-auto max-w-xs max-md:w-56 rounded"
           alt="louis's picture"

@@ -11,7 +11,7 @@ export const Skills = () => {
     <Section className="flex flex-col items-start gap-4">
       <Badge variant={"outline"}>Skills</Badge>
       <h2 className="pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-        I'm working with these languages for now ...
+        I am working with these languages for now ...
       </h2>
       <div className="flex max-md:flex-col gap-4 mb-4">
         <div className="flex flex-col gap-2 flex-1">
@@ -30,7 +30,7 @@ export const Skills = () => {
           <h3 className="text-xl font-bold tracking-tight ">Javascript </h3>
           <p className="text-sm text-muted-foreground">
             {" "}
-            I can create interactive site using<Code>Javascript</Code> and I'm
+            I can create interactive site using<Code>Javascript</Code> and I am
             interested by<Code>React.js</Code> to master user experience.
           </p>
         </div>
