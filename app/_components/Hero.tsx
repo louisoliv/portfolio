@@ -29,8 +29,9 @@ export const Hero = () => {
             <Code className="inline-flex items-center gap-1">
               <Image
                 src="https://zone01rouennormandie.org/wp-content/uploads/2024/02/ZONE01-ROUEN-NORMANDIE-HORIZON-FOND-NOIR-BONNE-TAILLE.png"
-                style={{ width: 20, height: "auto" }}
-                alt="Zone01 image"
+                width={20} // Set width directly here
+                height={20} // Adjust height as needed
+                alt="Zone01 i mage"
               />
               Zone01
             </Code>{" "}
@@ -41,6 +42,8 @@ export const Hero = () => {
       <div className="flex-[2] max-md:m-auto ml-auto">
         <Image
           src={imageLouis.src}
+          width={4000} // Set width directly here
+          height={4000} // Adjust height as needed
           className="w-full h-auto max-w-xs max-md:w-56 rounded"
           alt="louis's picture"
         />
