@@ -99,4 +99,11 @@ const WORKS: WorkProps[] = [
     date: "2024",
     url: "https://github.com/louisoliv/A-hanged-man",
   },
+  {
+    image: "/milkyway.png",
+    title: "Quiz App",
+    role: "Training",
+    date: "2024-2025",
+    url: "https://github.com/louisoliv/Stars-Wars-Quiz-App",
+  },
 ];
