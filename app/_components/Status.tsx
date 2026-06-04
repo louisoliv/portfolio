@@ -70,8 +70,8 @@ export const Status = () => {
               name="Louis Olivier"
               image="/_next/static/media/Fond-blanc2.1203aefd.jpg"
               mediumImage="https://banner2.cleanpng.com/20240403/ras/transparent-gmail-icon-google-mail-logo-with-vibrant-colors-and-m660d4ec2bd9db0.46699070.webp"
-              descritpon="louisolivier7602@gmail.com"
-              url="mailto:louisolivier7602@gmail.com"
+              descritpon="louisolivier7603@gmail.com"
+              url="mailto:louisolivier7603@gmail.com"
             />
             <ContactCard
               name="Louis Olivier"
