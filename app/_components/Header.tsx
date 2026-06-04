@@ -1,36 +1,62 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+"use client";
+
+import { buttonVariants } from "@/components/ui/button";
 import { Section } from "./Section";
 import { GithubIcon } from "./icons/GithubIcon";
 import { LinkedInIcon } from "./icons/LinkedIn";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+const NAV_LINKS = [
+  { label: "Expérience", href: "#experience" },
+  { label: "Projets", href: "#projects" },
+  { label: "Skills", href: "#skills" },
+  { label: "Contact", href: "#contact" },
+];
+
 export const Header = () => {
   return (
-    <header className="sticky top-0 py-4">
-      <Section className="flex items-baseline">
-        <h1 className="text-lg font-bold text-primary-foreground">
-          louisOl.com
-        </h1>
-        <div className="flex-1" />
+    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur-md">
+      <Section className="flex items-center py-3 gap-6">
+        {/* Logo */}
+        <span className="font-mono text-sm font-semibold text-emerald-400 tracking-widest shrink-0">
+          louisOl.dev
+        </span>
+
+        {/* Nav links */}
+        <nav className="hidden md:flex items-center gap-6 flex-1">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="flex-1 md:flex-none" />
+
+        {/* Icons */}
         <ul className="flex items-center gap-2">
           <Link
-            href="https://github.com/louisoliv/" //METTRE LE BON Github !!!!!!!!!!
+            href="https://github.com/louisoliv/"
             className={cn(
               buttonVariants({ variant: "outline" }),
-              "size-6 p-0 "
+              "size-8 p-0 rounded-lg border-border/60 hover:border-primary/50 hover:bg-primary/5 transition-colors"
             )}
           >
-            <GithubIcon size={20} className="text-foreground" />
+            <GithubIcon size={16} className="text-foreground" />
           </Link>
           <Link
-            href="https://www.linkedin.com/public-profile/settings?lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_self_edit_contact-info%3BJhkPPMP9T9maiVk6RlhmwQ%3D%3D" //METTRE le lien LinkedIn !!!!!!!!!!
+            href="https://linkedin.com"
             className={cn(
               buttonVariants({ variant: "outline" }),
-              "size-6 p-0 "
+              "size-8 p-0 rounded-lg border-border/60 hover:border-primary/50 hover:bg-primary/5 transition-colors"
             )}
           >
-            <LinkedInIcon size={20} className="text-foreground" />
+            <LinkedInIcon size={16} className="text-foreground" />
           </Link>
         </ul>
       </Section>
