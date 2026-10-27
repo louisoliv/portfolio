@@ -5,9 +5,13 @@ Hand-written in the gltfjsx format (no --transform) from public/models/cockpit.g
 Model: "Tie Fighter Cockpit Version 2" by MichaelEGA, licensed under CC BY 4.0
 */
 
+import { useMemo } from 'react'
 import * as THREE from 'three'
 import { useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
+import { PANELS, SectionId } from './panels'
+import { splitPanels } from './panelGeometry'
+import { InteractivePanel } from './InteractivePanel'
 
 const MODEL_URL = '/models/cockpit.glb'
 
@@ -64,8 +68,15 @@ type GLTFResult = GLTF & {
   }
 }
 
-export function Cockpit(props: JSX.IntrinsicElements['group']) {
+type CockpitProps = JSX.IntrinsicElements['group'] & {
+  onPanelSelect: (id: SectionId) => void
+}
+
+export function Cockpit({ onPanelSelect, ...props }: CockpitProps) {
   const { nodes, materials } = useGLTF(MODEL_URL) as GLTFResult
+  // Interactive panels are cut out of the shared meshes so they can move on hover
+  const plates = useMemo(() => splitPanels(nodes.triangles_triangles_0.geometry), [nodes])
+  const lights = useMemo(() => splitPanels(nodes.triangles_lights_triangles_lights_0.geometry), [nodes])
   return (
     <group {...props} dispose={null}>
       <group rotation={[-Math.PI / 2, 0, 0]}>
@@ -90,8 +101,19 @@ export function Cockpit(props: JSX.IntrinsicElements['group']) {
               <mesh geometry={nodes.red_lights_red_lights_0.geometry} material={materials.red_lights} />
               <mesh geometry={nodes.screen_screen_0.geometry} material={materials.screen} />
               <mesh geometry={nodes.sensors_sensors_0.geometry} material={materials.sensors} />
-              <mesh geometry={nodes.triangles_triangles_0.geometry} material={materials.triangles} />
-              <mesh geometry={nodes.triangles_lights_triangles_lights_0.geometry} material={materials.triangles_lights} />
+              <mesh geometry={plates.rest} material={materials.triangles} />
+              <mesh geometry={lights.rest} material={materials.triangles_lights} />
+              {PANELS.map(({ id }) => (
+                <InteractivePanel
+                  key={id}
+                  id={id}
+                  plate={plates.panels.get(id)!}
+                  lights={lights.panels.get(id)!}
+                  plateMaterial={materials.triangles}
+                  lightsMaterial={materials.triangles_lights}
+                  onSelect={onPanelSelect}
+                />
+              ))}
               <mesh geometry={nodes.window_back_glass_0.geometry} material={materials.glass} />
               <mesh geometry={nodes.window_front_glass_0.geometry} material={materials.glass} />
               <mesh geometry={nodes.window_top_glass_0.geometry} material={materials.glass} />

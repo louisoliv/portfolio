@@ -1,21 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { CameraControls } from '@react-three/drei'
 import { getCameraView, ViewId } from './panels'
-
-function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(false)
-  useEffect(() => {
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)')
-    setReduced(query.matches)
-    const onChange = (e: MediaQueryListEvent) => setReduced(e.matches)
-    query.addEventListener('change', onChange)
-    return () => query.removeEventListener('change', onChange)
-  }, [])
-  return reduced
-}
+import { usePrefersReducedMotion } from './usePrefersReducedMotion'
 
 type CameraRigProps = {
   view: ViewId

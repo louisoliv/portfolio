@@ -33,7 +33,7 @@ export const PANELS: Panel[] = [
 export const OVERVIEW_VIEW: CameraView = { position: [0, 0.05, -0.35], target: [0, 0, 0] }
 
 // How far in front of a panel the camera stops, along the panel normal
-const PANEL_VIEW_DISTANCE = 0.45
+const PANEL_VIEW_DISTANCE = 0.6
 
 export function getCameraView(id: ViewId): CameraView {
   const panel = PANELS.find((p) => p.id === id)
