@@ -1,10 +1,15 @@
 'use client'
 
-import { Suspense } from 'react'
+import { Suspense, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls, useProgress, Html } from '@react-three/drei'
+import { useProgress, Html } from '@react-three/drei'
 import { Cockpit } from './Cockpit'
 import { PanelMarkers } from './PanelMarkers'
+import { CameraRig } from './CameraRig'
+import { DevToolbar } from './DevToolbar'
+import { OVERVIEW_VIEW, ViewId } from './panels'
+
+const isDev = process.env.NODE_ENV === 'development'
 
 function Loader() {
   const { progress } = useProgress()
@@ -16,18 +21,24 @@ function Loader() {
 }
 
 export default function Scene() {
-  // Pilot seat: behind the center, facing the octagonal front window (+z)
+  const [view, setView] = useState<ViewId>('overview')
+  const [freeMode, setFreeMode] = useState(false)
+
   return (
-    <Canvas camera={{ position: [0, 0.05, -0.35], fov: 70, near: 0.01, far: 100 }}>
-      <color attach="background" args={['#000000']} />
-      <ambientLight intensity={0.6} />
-      <pointLight position={[0, 0.3, 0]} intensity={2} distance={4} />
-      <Suspense fallback={<Loader />}>
-        <Cockpit />
-        {process.env.NODE_ENV === 'development' && <PanelMarkers />}
-      </Suspense>
-      {/* Temporary: free exploration to locate panels (step 3) */}
-      <OrbitControls target={[0, 0, 0]} makeDefault />
-    </Canvas>
+    <div className="relative h-full w-full">
+      <Canvas camera={{ position: OVERVIEW_VIEW.position, fov: 70, near: 0.01, far: 100 }}>
+        <color attach="background" args={['#000000']} />
+        <ambientLight intensity={0.6} />
+        <pointLight position={[0, 0.3, 0]} intensity={2} distance={4} />
+        <Suspense fallback={<Loader />}>
+          <Cockpit />
+          {isDev && <PanelMarkers />}
+        </Suspense>
+        <CameraRig view={view} freeMode={isDev && freeMode} />
+      </Canvas>
+      {isDev && (
+        <DevToolbar view={view} onViewChange={setView} freeMode={freeMode} onFreeModeChange={setFreeMode} />
+      )}
+    </div>
   )
 }
