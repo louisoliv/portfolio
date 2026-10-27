@@ -4,6 +4,7 @@ import { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, useProgress, Html } from '@react-three/drei'
 import { Cockpit } from './Cockpit'
+import { PanelMarkers } from './PanelMarkers'
 
 function Loader() {
   const { progress } = useProgress()
@@ -23,6 +24,7 @@ export default function Scene() {
       <pointLight position={[0, 0.3, 0]} intensity={2} distance={4} />
       <Suspense fallback={<Loader />}>
         <Cockpit />
+        {process.env.NODE_ENV === 'development' && <PanelMarkers />}
       </Suspense>
       {/* Temporary: free exploration to locate panels (step 3) */}
       <OrbitControls target={[0, 0, 0]} makeDefault />
