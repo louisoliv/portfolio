@@ -8,7 +8,8 @@ import { PanelMarkers } from './PanelMarkers'
 import { CameraRig } from './CameraRig'
 import { DevToolbar } from './DevToolbar'
 import { PanelCard } from './PanelCard'
-import { ImperialCard } from './ImperialCard'
+import { ImperialCard, CardTheme } from './ImperialCard'
+import { SECTION_CARDS } from './SectionCards'
 import { OVERVIEW_VIEW, PANELS, ViewId } from './panels'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -25,6 +26,7 @@ function Loader() {
 export default function Scene() {
   const [view, setView] = useState<ViewId>('overview')
   const [freeMode, setFreeMode] = useState(false)
+  const [cardTheme, setCardTheme] = useState<CardTheme>('cockpit')
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -43,20 +45,16 @@ export default function Scene() {
         <Suspense fallback={<Loader />}>
           <Cockpit onPanelSelect={setView} />
           {isDev && <PanelMarkers />}
-          {/* Temporary (step 6, phase 2): style preview with placeholder content */}
-          {isDev && (
-            <PanelCard panel={PANELS[0]} visible={view === PANELS[0].id}>
-              <ImperialCard code="SEC-01" title="Expérience">
-                <p className="text-sm leading-relaxed text-amber-100/80">
-                  Carte de test. Le contenu réel de la section sera branché en phase 3.
-                </p>
-                <ul className="mt-3 space-y-1 text-sm">
-                  <li className="text-amber-200">▸ Entrée de démonstration A</li>
-                  <li className="text-amber-200">▸ Entrée de démonstration B</li>
-                </ul>
-              </ImperialCard>
-            </PanelCard>
-          )}
+          {PANELS.map((panel) => {
+            const { code, Content } = SECTION_CARDS[panel.id]
+            return (
+              <PanelCard key={panel.id} panel={panel} visible={view === panel.id}>
+                <ImperialCard code={code} title={panel.label} theme={cardTheme}>
+                  <Content />
+                </ImperialCard>
+              </PanelCard>
+            )
+          })}
         </Suspense>
         <CameraRig view={view} freeMode={isDev && freeMode} />
       </Canvas>
@@ -70,7 +68,14 @@ export default function Scene() {
         </button>
       )}
       {isDev && (
-        <DevToolbar view={view} onViewChange={setView} freeMode={freeMode} onFreeModeChange={setFreeMode} />
+        <DevToolbar
+          view={view}
+          onViewChange={setView}
+          freeMode={freeMode}
+          onFreeModeChange={setFreeMode}
+          cardTheme={cardTheme}
+          onCardThemeChange={setCardTheme}
+        />
       )}
     </div>
   )
