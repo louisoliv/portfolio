@@ -35,13 +35,35 @@ export const OVERVIEW_VIEW: CameraView = { position: [0, 0.05, -0.35], target: [
 // How far in front of a panel the camera stops, along the panel normal
 const PANEL_VIEW_DISTANCE = 0.6
 
+// Distance from the panel center to its info card center, towards the window
+export const CARD_SIDE_OFFSET = 0.40
+
+// +1 or -1 along the panel's local x axis: the side where the window (and the card) is.
+// Panels left of the window (+x) have it on their local +x side.
+export function getCardSide(panel: Panel) {
+  return panel.position[0] > 0 ? 1 : -1
+}
+
+// World direction from the panel center towards its card: the panel's local x axis
+// (up × normal, as built by Matrix4.lookAt), oriented towards the window
+function getCardDirection(panel: Panel): Vec3 {
+  const [nx, , nz] = panel.normal
+  const length = Math.hypot(nx, nz)
+  const side = getCardSide(panel)
+  return [(side * nz) / length, 0, (side * -nx) / length]
+}
+
 export function getCameraView(id: ViewId): CameraView {
   const panel = PANELS.find((p) => p.id === id)
   if (!panel) return OVERVIEW_VIEW
-  const [px, py, pz] = panel.position
+  // Aim between the panel and its card so both are centered on screen,
+  // and shift the camera by the same amount to keep facing the wall straight on
+  const [dx, , dz] = getCardDirection(panel)
+  const shift = CARD_SIDE_OFFSET / 2
+  const target: Vec3 = [panel.position[0] + dx * shift, panel.position[1], panel.position[2] + dz * shift]
   const [nx, ny, nz] = panel.normal
   return {
-    position: [px + nx * PANEL_VIEW_DISTANCE, py + ny * PANEL_VIEW_DISTANCE, pz + nz * PANEL_VIEW_DISTANCE],
-    target: panel.position,
+    position: [target[0] + nx * PANEL_VIEW_DISTANCE, target[1] + ny * PANEL_VIEW_DISTANCE, target[2] + nz * PANEL_VIEW_DISTANCE],
+    target,
   }
 }
