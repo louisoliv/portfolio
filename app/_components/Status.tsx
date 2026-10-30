@@ -1,17 +1,16 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Section } from "./Section";
-import { SideProject, SideProjectProps } from "./SideProject";
+import { SideProject } from "./SideProject";
 import { ContactCard } from "./ContactCard";
-import { Work, WorkProps } from "./Work";
+import { Work } from "./Work";
 import {
-  Briefcase,
-  ImageUp,
-  Joystick,
-  ChartLine,
-  Rocket,
-  BarChart3,
-} from "lucide-react";
+  SIDE_PROJECTS,
+  WORKS,
+  EMAIL,
+  LINKEDIN,
+  CONTACT_PHOTO,
+} from "../_data/portfolio";
 
 export const Status = () => {
   return (
@@ -68,17 +67,17 @@ export const Status = () => {
             </p>
             <ContactCard
               name="Louis Olivier"
-              image="/_next/static/media/Fond-blanc2.1203aefd.jpg"
-              mediumImage="https://banner2.cleanpng.com/20240403/ras/transparent-gmail-icon-google-mail-logo-with-vibrant-colors-and-m660d4ec2bd9db0.46699070.webp"
-              descritpon="louisolivier7603@gmail.com"
-              url="mailto:louisolivier7603@gmail.com"
+              image={CONTACT_PHOTO}
+              mediumImage={EMAIL.icon}
+              descritpon={EMAIL.address}
+              url={EMAIL.url}
             />
             <ContactCard
               name="Louis Olivier"
-              image="/_next/static/media/Fond-blanc2.1203aefd.jpg"
-              mediumImage="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"
+              image={CONTACT_PHOTO}
+              mediumImage={LINKEDIN.icon}
               descritpon="Profil LinkedIn"
-              url="https://www.linkedin.com/in/louis-olivier"
+              url={LINKEDIN.url}
             />
           </Card>
         </div>
@@ -86,79 +85,3 @@ export const Status = () => {
     </Section>
   );
 };
-
-const SIDE_PROJECTS: SideProjectProps[] = [
-  {
-    Logo: Briefcase,
-    title: "ERP McDonald's",
-    description:
-      "Création d'un ERP complet pour un franchisé McDonald's - gestion des stocks, commandes et employés.",
-    url: "https://github.com/louisoliv/",
-    tags: [
-      "Python",
-      "Flask",
-      "React",
-      "TypeScript",
-      "Tailwind",
-      "Docker",
-      "PostgreSQL",
-    ],
-    featured: true,
-  },
-  {
-    Logo: Rocket,
-    title: "Application : 2048",
-    description:
-      "Développement d'une application mobile en Dart - Flutter du jeu 2048",
-    url: "https://github.com/louisoliv/",
-    tags: ["Dart", "Flutter"],
-  },
-  {
-    Logo: BarChart3,
-    title: "Social Network",
-    description:
-      "Un réseau social s'inspirant d'Instagram, Facebook et Discord",
-    url: "https://github.com/louisoliv/",
-    tags: ["Go", "Next.js", "JavaScript", "Docker", "SQLite3"],
-  },
-  {
-    Logo: ImageUp,
-    title: "Forum Image Upload",
-    description:
-      "Forum / blog complet avec posts, commentaires, likes et upload d'images.",
-    url: "https://github.com/louisoliv/Forum-Image-Upload",
-    tags: ["Go", "HTML", "CSS"],
-  },
-  {
-    Logo: Joystick,
-    title: "Make Your Game",
-    description: "Space Invaders entier en JavaScript vanilla, HTML et CSS.",
-    url: "https://github.com/louisoliv/Make-Your-Game-History",
-    tags: ["JS", "HTML", "CSS"],
-  },
-  {
-    Logo: ChartLine,
-    title: "GraphQL",
-    description:
-      "Recréation du site de l'école avec fetches multiples et requêtes GraphQL.",
-    url: "https://github.com/louisoliv/louisoliv.github.io",
-    tags: ["GraphQL", "JS"],
-  },
-];
-
-const WORKS: WorkProps[] = [
-  {
-    image: "/hangman.png",
-    title: "Hanged game",
-    role: "Training",
-    date: "2024",
-    url: "https://github.com/louisoliv/A-hanged-man",
-  },
-  {
-    image: "/milkyway.png",
-    title: "Quiz App",
-    role: "Training",
-    date: "2024-2025",
-    url: "https://github.com/louisoliv/Stars-Wars-Quiz-App",
-  },
-];

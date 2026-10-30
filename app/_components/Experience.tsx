@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Section } from "./Section";
 import Link from "next/link";
+import { EXPERIENCES } from "../_data/portfolio";
 
 export type ExperienceItemProps = {
   title: string;
@@ -11,29 +12,6 @@ export type ExperienceItemProps = {
   badge: string;
   badgeVariant: "alternance" | "formation";
 };
-
-const EXPERIENCES: ExperienceItemProps[] = [
-  {
-    title: "Développeur Full Stack",
-    company: "Entreprise Arès (franchisé McDonalds) · Alternance",
-    companyUrl: "#",
-    date: "2025 - 2026",
-    description:
-      "Développement d'une application métier (ERP McDonald's) en environnement professionnel. Travail solitaire puis en équipe (sur 2 mois), gestion de versions Git, déploiement continu. Stack Python, Flask, SQLAlchemy, React, TypeScript, Tailwind, Docker et PostgreSQL.",
-    badge: "Alternance",
-    badgeVariant: "alternance",
-  },
-  {
-    title: "Étudiant développeur",
-    company: "Zone01 · Rouen, Normandie",
-    companyUrl: "https://zone01rouennormandie.org/",
-    date: "2023 - 2026",
-    description:
-      "École de code par la pratique - projets collaboratifs en Go, JavaScript et Rust. Pédagogie basée sur des projets réels et du pair-programming. Développement de l'autonomie et de la rigueur technique.",
-    badge: "Formation",
-    badgeVariant: "formation",
-  },
-];
 
 export const Experience = () => {
   return (

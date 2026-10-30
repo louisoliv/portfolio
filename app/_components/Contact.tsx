@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Section } from "./Section";
 import { ContactCard } from "./ContactCard";
+import { EMAIL, LINKEDIN, CONTACT_PHOTO } from "../_data/portfolio";
 
 export const Contact = () => {
   return (
@@ -16,17 +17,17 @@ export const Contact = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-xl">
         <ContactCard
           name="Email"
-          image="/_next/static/media/Fond-blanc2.1203aefd.jpg"
-          mediumImage="https://banner2.cleanpng.com/20240403/ras/transparent-gmail-icon-google-mail-logo-with-vibrant-colors-and-m660d4ec2bd9db0.46699070.webp"
-          descritpon="louisolivier7603@gmail.com"
-          url="mailto:louisolivier7603@gmail.com"
+          image={CONTACT_PHOTO}
+          mediumImage={EMAIL.icon}
+          descritpon={EMAIL.address}
+          url={EMAIL.url}
         />
         <ContactCard
           name="LinkedIn"
-          image="/_next/static/media/Fond-blanc2.1203aefd.jpg"
-          mediumImage="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png"
+          image={CONTACT_PHOTO}
+          mediumImage={LINKEDIN.icon}
           descritpon="Louis Olivier"
-          url="https://www.linkedin.com/in/louis-olivier"
+          url={LINKEDIN.url}
         />
       </div>
     </Section>

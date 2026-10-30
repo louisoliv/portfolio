@@ -4,21 +4,7 @@ import { Code } from "./Code";
 import Link from "next/link";
 import Image from "next/image";
 import imageLouis from "../Fond-blanc2.jpg";
-
-const TECH_TAGS = [
-  "React · Next.js",
-  "TypeScript",
-  "Golang",
-  "Python",
-  "Docker",
-  "SQL",
-];
-
-const STATS = [
-  { value: "50+", label: "Projets" },
-  { value: "2,5", label: "Ans de code" },
-  { value: "10+", label: "Techs" },
-];
+import { TECH_TAGS, STATS } from "../_data/portfolio";
 
 export const Hero = () => {
   return (
