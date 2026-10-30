@@ -7,7 +7,9 @@ import { Cockpit } from './Cockpit'
 import { PanelMarkers } from './PanelMarkers'
 import { CameraRig } from './CameraRig'
 import { DevToolbar } from './DevToolbar'
-import { OVERVIEW_VIEW, ViewId } from './panels'
+import { PanelCard } from './PanelCard'
+import { ImperialCard } from './ImperialCard'
+import { OVERVIEW_VIEW, PANELS, ViewId } from './panels'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -41,6 +43,20 @@ export default function Scene() {
         <Suspense fallback={<Loader />}>
           <Cockpit onPanelSelect={setView} />
           {isDev && <PanelMarkers />}
+          {/* Temporary (step 6, phase 2): style preview with placeholder content */}
+          {isDev && (
+            <PanelCard panel={PANELS[0]} visible={view === PANELS[0].id}>
+              <ImperialCard code="SEC-01" title="Expérience">
+                <p className="text-sm leading-relaxed text-amber-100/80">
+                  Carte de test. Le contenu réel de la section sera branché en phase 3.
+                </p>
+                <ul className="mt-3 space-y-1 text-sm">
+                  <li className="text-amber-200">▸ Entrée de démonstration A</li>
+                  <li className="text-amber-200">▸ Entrée de démonstration B</li>
+                </ul>
+              </ImperialCard>
+            </PanelCard>
+          )}
         </Suspense>
         <CameraRig view={view} freeMode={isDev && freeMode} />
       </Canvas>
