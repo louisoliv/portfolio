@@ -7,7 +7,7 @@ import { SectionId } from './panels'
 // Cards are rendered by drei's <Html> in a separate React root, outside the
 // Next.js router: plain <a> instead of next/link. External links open a new tab
 // so the visitor keeps their place in the cockpit.
-function ExternalLink({ href, className, children }: { href: string; className?: string; children: React.ReactNode }) {
+export function ExternalLink({ href, className, children }: { href: string; className?: string; children: React.ReactNode }) {
   const external = href.startsWith('http')
   return (
     <a
@@ -20,7 +20,7 @@ function ExternalLink({ href, className, children }: { href: string; className?:
   )
 }
 
-function Tag({ children }: { children: React.ReactNode }) {
+export function Tag({ children }: { children: React.ReactNode }) {
   return <span className="border border-hud-line/30 bg-hud-line/5 px-1.5 py-0.5 text-[10px] text-hud-fg/80">{children}</span>
 }
 

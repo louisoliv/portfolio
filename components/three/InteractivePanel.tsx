@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { ThreeEvent, useFrame } from '@react-three/fiber'
 import { Edges, useCursor } from '@react-three/drei'
@@ -18,14 +18,26 @@ type InteractivePanelProps = {
   plateMaterial: THREE.Material
   lightsMaterial: THREE.Material
   onSelect: (id: SectionId) => void
+  onHoverChange: (id: SectionId, hovered: boolean) => void
 }
 
-export function InteractivePanel({ id, plate, lights, plateMaterial, lightsMaterial, onSelect }: InteractivePanelProps) {
+export function InteractivePanel({
+  id,
+  plate,
+  lights,
+  plateMaterial,
+  lightsMaterial,
+  onSelect,
+  onHoverChange,
+}: InteractivePanelProps) {
   const group = useRef<THREE.Group>(null)
   const [hovered, setHovered] = useState(false)
   const reducedMotion = usePrefersReducedMotion()
   const lifted = useMemo(() => getLocalPanelNormal(id).multiplyScalar(HOVER_LIFT), [id])
   useCursor(hovered)
+
+  // Lets the scene light up the panel's wall marking
+  useEffect(() => onHoverChange(id, hovered), [id, hovered, onHoverChange])
 
   useFrame((_, delta) => {
     if (!group.current) return

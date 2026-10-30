@@ -5,9 +5,10 @@ Hand-written in the gltfjsx format (no --transform) from public/models/cockpit.g
 Model: "Tie Fighter Cockpit Version 2" by MichaelEGA, licensed under CC BY 4.0
 */
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import * as THREE from 'three'
-import { useGLTF } from '@react-three/drei'
+import { ThreeEvent } from '@react-three/fiber'
+import { useCursor, useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import { PANELS, SectionId } from './panels'
 import { splitPanels } from './panelGeometry'
@@ -70,13 +71,39 @@ type GLTFResult = GLTF & {
 
 type CockpitProps = JSX.IntrinsicElements['group'] & {
   onPanelSelect: (id: SectionId) => void
+  onPanelHover: (id: SectionId, hovered: boolean) => void
+  onConsoleClick: () => void
 }
 
-export function Cockpit({ onPanelSelect, ...props }: CockpitProps) {
+// Brightness of the targeting computer's round screen, at rest and on hover
+const SCREEN_GLOW = 1
+const SCREEN_GLOW_HOVER = 2.5
+
+export function Cockpit({ onPanelSelect, onPanelHover, onConsoleClick, ...props }: CockpitProps) {
   const { nodes, materials } = useGLTF(MODEL_URL) as GLTFResult
   // Interactive panels are cut out of the shared meshes so they can move on hover
   const plates = useMemo(() => splitPanels(nodes.triangles_triangles_0.geometry), [nodes])
   const lights = useMemo(() => splitPanels(nodes.triangles_lights_triangles_lights_0.geometry), [nodes])
+
+  const [consoleHovered, setConsoleHovered] = useState(false)
+  useCursor(consoleHovered)
+  useEffect(() => {
+    // The screen material is only used by the round screen
+    materials.screen.emissiveIntensity = consoleHovered ? SCREEN_GLOW_HOVER : SCREEN_GLOW
+  }, [consoleHovered, materials])
+  // Moving between the console's meshes fires out then over, which cancels out
+  const consoleHandlers = {
+    onPointerOver: (e: ThreeEvent<PointerEvent>) => {
+      e.stopPropagation()
+      setConsoleHovered(true)
+    },
+    onPointerOut: () => setConsoleHovered(false),
+    onClick: (e: ThreeEvent<MouseEvent>) => {
+      e.stopPropagation()
+      onConsoleClick()
+    },
+  }
+
   return (
     <group {...props} dispose={null}>
       <group rotation={[-Math.PI / 2, 0, 0]}>
@@ -91,15 +118,18 @@ export function Cockpit({ onPanelSelect, ...props }: CockpitProps) {
               <mesh geometry={nodes.canopy_struts_bolts_canopy_struts_bolts_0.geometry} material={materials.canopy_struts_bolts} />
               <mesh geometry={nodes.canopy_struts_center_inset_canopy_struts_center_inset_0.geometry} material={materials.canopy_struts_center_inset} />
               <mesh geometry={nodes.canopy_struts_insets_canopy_struts_inset_0.geometry} material={materials.canopy_struts_inset} />
-              <mesh geometry={nodes.detail_metal_painted_black_detail_metal_painted_black_0.geometry} material={materials.detail_metal_painted_black} />
-              <mesh geometry={nodes.detail_metal_painted_grey_detail_metal_painted_grey_0.geometry} material={materials.detail_metal_painted_grey} />
-              <mesh geometry={nodes.detail_metal_shiny_detail_metal_shiny_0.geometry} material={materials.detail_metal_shiny} />
+              {/* Targeting computer: toggles the overview card (cables excluded to avoid stray clicks) */}
+              <group {...consoleHandlers}>
+                <mesh geometry={nodes.detail_metal_painted_black_detail_metal_painted_black_0.geometry} material={materials.detail_metal_painted_black} />
+                <mesh geometry={nodes.detail_metal_painted_grey_detail_metal_painted_grey_0.geometry} material={materials.detail_metal_painted_grey} />
+                <mesh geometry={nodes.detail_metal_shiny_detail_metal_shiny_0.geometry} material={materials.detail_metal_shiny} />
+                <mesh geometry={nodes.red_lights_red_lights_0.geometry} material={materials.red_lights} />
+                <mesh geometry={nodes.screen_screen_0.geometry} material={materials.screen} />
+              </group>
               <mesh geometry={nodes.detail_pipes_detail_pipes_0.geometry} material={materials.detail_pipes} />
               <mesh geometry={nodes.floor_floor_0.geometry} material={materials.floor} />
               <mesh geometry={nodes.hatch_hatch_0.geometry} material={materials.hatch} />
               <mesh geometry={nodes.hull_hull_0.geometry} material={materials.hull} />
-              <mesh geometry={nodes.red_lights_red_lights_0.geometry} material={materials.red_lights} />
-              <mesh geometry={nodes.screen_screen_0.geometry} material={materials.screen} />
               <mesh geometry={nodes.sensors_sensors_0.geometry} material={materials.sensors} />
               <mesh geometry={plates.rest} material={materials.triangles} />
               <mesh geometry={lights.rest} material={materials.triangles_lights} />
@@ -112,6 +142,7 @@ export function Cockpit({ onPanelSelect, ...props }: CockpitProps) {
                   plateMaterial={materials.triangles}
                   lightsMaterial={materials.triangles_lights}
                   onSelect={onPanelSelect}
+                  onHoverChange={onPanelHover}
                 />
               ))}
               <mesh geometry={nodes.window_back_glass_0.geometry} material={materials.glass} />

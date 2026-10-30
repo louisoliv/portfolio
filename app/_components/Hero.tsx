@@ -4,7 +4,7 @@ import { Code } from "./Code";
 import Link from "next/link";
 import Image from "next/image";
 import imageLouis from "../Fond-blanc2.jpg";
-import { TECH_TAGS, STATS } from "../_data/portfolio";
+import { HERO, TECH_TAGS, STATS } from "../_data/portfolio";
 
 export const Hero = () => {
   return (
@@ -15,46 +15,44 @@ export const Hero = () => {
         <div className="flex items-center gap-2 mb-1 w-fit px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/8">
           <span className="size-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
           <span className="text-xs text-emerald-500 font-semibold tracking-wide uppercase">
-            Disponible · Alternance
+            {HERO.availability}
           </span>
         </div>
 
         {/* Nom */}
         <h2 className="font-caption font-extrabold text-5xl lg:text-6xl leading-tight">
-          <span className="text-foreground">Louis </span>
+          <span className="text-foreground">{`${HERO.firstName} `}</span>
           <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            OLIVIER
+            {HERO.lastName}
           </span>
         </h2>
 
         <h3 className="text-2xl font-caption text-muted-foreground font-medium">
-          Full Stack Developer
+          {HERO.role}
         </h3>
 
         <p className="text-sm text-muted-foreground leading-relaxed max-w-md mt-1">
-          Développeur full stack passionné par la création d&apos;interfaces
-          modernes et d&apos;APIs robustes. En formation à{" "}
-          <Link href="https://zone01rouennormandie.org/">
+          {HERO.intro.beforeSchool}{" "}
+          <Link href={HERO.intro.school.url}>
             <Code className="inline-flex items-center gap-1">
               <Image
-                src="https://zone01rouennormandie.org/wp-content/uploads/2024/02/ZONE01-ROUEN-NORMANDIE-HORIZON-FOND-NOIR-BONNE-TAILLE.png"
+                src={HERO.intro.school.logo}
                 width={16}
                 height={16}
-                alt="Zone01"
+                alt={HERO.intro.school.label}
                 className="rounded-sm"
               />
-              Zone01
+              {HERO.intro.school.label}
             </Code>
           </Link>{" "}
-          Rouen et en alternance, je construis des projets concrets du frontend
-          au backend - et je publie sur{" "}
-          <Link href="https://github.com/louisoliv">
+          {HERO.intro.afterSchool}{" "}
+          <Link href={HERO.intro.github.url}>
             <Code className="inline-flex items-center gap-1">
               <GithubIcon size={13} className="inline" />
-              GitHub
+              {HERO.intro.github.label}
             </Code>
           </Link>
-          .
+          {HERO.intro.end}
         </p>
 
         {/* Tech tags */}

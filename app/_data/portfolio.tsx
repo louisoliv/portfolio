@@ -23,6 +23,27 @@ import { FlutterIcon } from "../_components/icons/FlutterLogo";
 
 // ─── Hero ────────────────────────────────────────────────────────────────
 
+export const HERO = {
+  availability: "Disponible · Alternance",
+  firstName: "Louis",
+  lastName: "OLIVIER",
+  role: "Full Stack Developer",
+  // The intro sentence is split around its two inline links
+  intro: {
+    beforeSchool:
+      "Développeur full stack passionné par la création d'interfaces modernes et d'APIs robustes. En formation à",
+    school: {
+      label: "Zone01",
+      url: "https://zone01rouennormandie.org/",
+      logo: "https://zone01rouennormandie.org/wp-content/uploads/2024/02/ZONE01-ROUEN-NORMANDIE-HORIZON-FOND-NOIR-BONNE-TAILLE.png",
+    },
+    afterSchool:
+      "Rouen et en alternance, je construis des projets concrets du frontend au backend - et je publie sur",
+    github: { label: "GitHub", url: "https://github.com/louisoliv" },
+    end: ".",
+  },
+};
+
 export const TECH_TAGS = [
   "React · Next.js",
   "TypeScript",

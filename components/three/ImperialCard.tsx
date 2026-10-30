@@ -23,11 +23,13 @@ type ImperialCardProps = {
   code: string
   title: string
   theme?: CardTheme
+  // Hide the large title when the content brings its own main heading
+  showHeading?: boolean
   children: React.ReactNode
   className?: string
 }
 
-export function ImperialCard({ code, title, theme = 'cockpit', children, className }: ImperialCardProps) {
+export function ImperialCard({ code, title, theme = 'cockpit', showHeading = true, children, className }: ImperialCardProps) {
   const { vars } = CARD_THEMES[theme]
   const style = {
     clipPath: CHAMFER,
@@ -58,7 +60,7 @@ export function ImperialCard({ code, title, theme = 'cockpit', children, classNa
         </header>
 
         <div className="relative px-5 py-4">
-          <h2 className="mb-3 text-lg font-semibold uppercase tracking-widest text-hud-title">{title}</h2>
+          {showHeading && <h2 className="mb-3 text-lg font-semibold uppercase tracking-widest text-hud-title">{title}</h2>}
           {children}
         </div>
 
