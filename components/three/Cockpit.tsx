@@ -79,6 +79,11 @@ type CockpitProps = JSX.IntrinsicElements['group'] & {
 const SCREEN_GLOW = 1
 const SCREEN_GLOW_HOVER = 2.5
 
+// World-space box around the console head: front face with the round screen and
+// buttons (x ±0.16, y -0.27..-0.07, z from 0.45) and the small unit behind it
+const CONSOLE_HITBOX_POSITION: [number, number, number] = [0, -0.17, 0.52]
+const CONSOLE_HITBOX_SIZE: [number, number, number] = [0.34, 0.22, 0.14]
+
 export function Cockpit({ onPanelSelect, onPanelHover, onConsoleClick, ...props }: CockpitProps) {
   const { nodes, materials } = useGLTF(MODEL_URL) as GLTFResult
   // Interactive panels are cut out of the shared meshes so they can move on hover
@@ -91,21 +96,27 @@ export function Cockpit({ onPanelSelect, onPanelHover, onConsoleClick, ...props 
     // The screen material is only used by the round screen
     materials.screen.emissiveIntensity = consoleHovered ? SCREEN_GLOW_HOVER : SCREEN_GLOW
   }, [consoleHovered, materials])
-  // Moving between the console's meshes fires out then over, which cancels out
-  const consoleHandlers = {
-    onPointerOver: (e: ThreeEvent<PointerEvent>) => {
-      e.stopPropagation()
-      setConsoleHovered(true)
-    },
-    onPointerOut: () => setConsoleHovered(false),
-    onClick: (e: ThreeEvent<MouseEvent>) => {
-      e.stopPropagation()
-      onConsoleClick()
-    },
-  }
 
   return (
     <group {...props} dispose={null}>
+      {/* Targeting computer hitbox. The console meshes also hold its pole, feet and the large
+          round plate below it, so an invisible box over the console head is used instead
+          (raycasting ignores `visible`) */}
+      <mesh
+        position={CONSOLE_HITBOX_POSITION}
+        visible={false}
+        onPointerOver={(e: ThreeEvent<PointerEvent>) => {
+          e.stopPropagation()
+          setConsoleHovered(true)
+        }}
+        onPointerOut={() => setConsoleHovered(false)}
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation()
+          onConsoleClick()
+        }}
+      >
+        <boxGeometry args={CONSOLE_HITBOX_SIZE} />
+      </mesh>
       <group rotation={[-Math.PI / 2, 0, 0]}>
         <group rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
           <group rotation={[0, Math.PI, 0]}>
@@ -118,18 +129,15 @@ export function Cockpit({ onPanelSelect, onPanelHover, onConsoleClick, ...props 
               <mesh geometry={nodes.canopy_struts_bolts_canopy_struts_bolts_0.geometry} material={materials.canopy_struts_bolts} />
               <mesh geometry={nodes.canopy_struts_center_inset_canopy_struts_center_inset_0.geometry} material={materials.canopy_struts_center_inset} />
               <mesh geometry={nodes.canopy_struts_insets_canopy_struts_inset_0.geometry} material={materials.canopy_struts_inset} />
-              {/* Targeting computer: toggles the overview card (cables excluded to avoid stray clicks) */}
-              <group {...consoleHandlers}>
-                <mesh geometry={nodes.detail_metal_painted_black_detail_metal_painted_black_0.geometry} material={materials.detail_metal_painted_black} />
-                <mesh geometry={nodes.detail_metal_painted_grey_detail_metal_painted_grey_0.geometry} material={materials.detail_metal_painted_grey} />
-                <mesh geometry={nodes.detail_metal_shiny_detail_metal_shiny_0.geometry} material={materials.detail_metal_shiny} />
-                <mesh geometry={nodes.red_lights_red_lights_0.geometry} material={materials.red_lights} />
-                <mesh geometry={nodes.screen_screen_0.geometry} material={materials.screen} />
-              </group>
+              <mesh geometry={nodes.detail_metal_painted_black_detail_metal_painted_black_0.geometry} material={materials.detail_metal_painted_black} />
+              <mesh geometry={nodes.detail_metal_painted_grey_detail_metal_painted_grey_0.geometry} material={materials.detail_metal_painted_grey} />
+              <mesh geometry={nodes.detail_metal_shiny_detail_metal_shiny_0.geometry} material={materials.detail_metal_shiny} />
               <mesh geometry={nodes.detail_pipes_detail_pipes_0.geometry} material={materials.detail_pipes} />
               <mesh geometry={nodes.floor_floor_0.geometry} material={materials.floor} />
               <mesh geometry={nodes.hatch_hatch_0.geometry} material={materials.hatch} />
               <mesh geometry={nodes.hull_hull_0.geometry} material={materials.hull} />
+              <mesh geometry={nodes.red_lights_red_lights_0.geometry} material={materials.red_lights} />
+              <mesh geometry={nodes.screen_screen_0.geometry} material={materials.screen} />
               <mesh geometry={nodes.sensors_sensors_0.geometry} material={materials.sensors} />
               <mesh geometry={plates.rest} material={materials.triangles} />
               <mesh geometry={lights.rest} material={materials.triangles_lights} />
