@@ -2,7 +2,7 @@
 
 import { Fragment, Suspense, useCallback, useEffect, useState } from 'react'
 import { Canvas, ComputeFunction } from '@react-three/fiber'
-import { useProgress, Html } from '@react-three/drei'
+import { useProgress } from '@react-three/drei'
 import { Cockpit } from './Cockpit'
 import { CameraRig } from './CameraRig'
 import { HeroCard } from './HeroCard'
@@ -11,6 +11,7 @@ import { PanelCard } from './PanelCard'
 import { ImperialCard, CardTheme } from './ImperialCard'
 import { SECTION_CARDS } from './SectionCards'
 import { PanelLabel } from './PanelLabel'
+import { LoadingScreen } from './LoadingScreen'
 import { OVERVIEW_VIEW, PANELS, SectionId, ViewId } from './panels'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -26,21 +27,17 @@ const computePointer: ComputeFunction = (event, state) => {
   state.raycaster.setFromCamera(state.pointer, state.camera)
 }
 
-function Loader() {
-  const { progress } = useProgress()
-  return (
-    <Html center className="font-mono text-sm text-red-500">
-      Chargement… {progress.toFixed(0)}%
-    </Html>
-  )
-}
-
 export default function Scene() {
   const [view, setView] = useState<ViewId>('overview')
   const [freeMode, setFreeMode] = useState(false)
   const [cardTheme, setCardTheme] = useState<CardTheme>('cockpit')
   const [heroVisible, setHeroVisible] = useState(true)
   const [hoveredPanel, setHoveredPanel] = useState<SectionId | null>(null)
+  const { progress, active } = useProgress()
+  // drei's <Html> elements sit above every other DOM layer (huge z-index), including the
+  // boot screen: only mount them once the boot sequence is over
+  const [booted, setBooted] = useState(false)
+  const onBootFinished = useCallback(() => setBooted(true), [])
 
   // Stable: InteractivePanel reports through an effect that depends on it
   const onPanelHover = useCallback((id: SectionId, hovered: boolean) => {
@@ -74,10 +71,11 @@ export default function Scene() {
         <color attach="background" args={['#000000']} />
         <ambientLight intensity={0.6} />
         <pointLight position={[0, 0.3, 0]} intensity={2} distance={4} />
-        <Suspense fallback={<Loader />}>
+        {/* Loading is shown by the LoadingScreen overlay below */}
+        <Suspense fallback={null}>
           <Cockpit onPanelSelect={setView} onPanelHover={onPanelHover} onConsoleClick={onConsoleClick} />
-          <HeroCard visible={view === 'overview' && heroVisible} theme={cardTheme} onNavigate={setView} />
-          {PANELS.map((panel) => {
+          <HeroCard visible={booted && view === 'overview' && heroVisible} theme={cardTheme} onNavigate={setView} />
+          {booted && PANELS.map((panel) => {
             const { code, Content } = SECTION_CARDS[panel.id]
             return (
               <Fragment key={panel.id}>
@@ -103,6 +101,7 @@ export default function Scene() {
           ← Vue d&apos;ensemble
         </button>
       )}
+      <LoadingScreen progress={progress} done={!active && progress === 100} onFinished={onBootFinished} />
       {/* Required by the model's CC BY 4.0 licence */}
       <p className="absolute bottom-2 right-3 font-mono text-[10px] text-zinc-500">
         « Tie Fighter Cockpit Version 2 » by MichaelEGA, licensed under{' '}
