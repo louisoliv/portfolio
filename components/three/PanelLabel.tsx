@@ -21,7 +21,14 @@ export function PanelLabel({ panel, code, highlighted }: PanelLabelProps) {
 
   return (
     <group position={panel.position} quaternion={quaternion}>
-      <Html transform distanceFactor={DISTANCE_FACTOR} position={LABEL_POSITION} pointerEvents="none">
+      {/* Low z-index: wall markings must stay under the DOM overlays (bottom sheet, section bar) */}
+      <Html
+        transform
+        distanceFactor={DISTANCE_FACTOR}
+        position={LABEL_POSITION}
+        pointerEvents="none"
+        zIndexRange={[10, 0]}
+      >
         <p
           aria-hidden
           className={cn(

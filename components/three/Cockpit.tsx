@@ -70,6 +70,8 @@ type GLTFResult = GLTF & {
 }
 
 type CockpitProps = JSX.IntrinsicElements['group'] & {
+  // Panel whose section is open, kept highlighted
+  openPanel?: SectionId
   onPanelSelect: (id: SectionId) => void
   onPanelHover: (id: SectionId, hovered: boolean) => void
   onConsoleClick: () => void
@@ -84,7 +86,7 @@ const SCREEN_GLOW_HOVER = 2.5
 const CONSOLE_HITBOX_POSITION: [number, number, number] = [0, -0.17, 0.52]
 const CONSOLE_HITBOX_SIZE: [number, number, number] = [0.34, 0.22, 0.14]
 
-export function Cockpit({ onPanelSelect, onPanelHover, onConsoleClick, ...props }: CockpitProps) {
+export function Cockpit({ openPanel, onPanelSelect, onPanelHover, onConsoleClick, ...props }: CockpitProps) {
   const { nodes, materials } = useGLTF(MODEL_URL) as GLTFResult
   // Interactive panels are cut out of the shared meshes so they can move on hover
   const plates = useMemo(() => splitPanels(nodes.triangles_triangles_0.geometry), [nodes])
@@ -149,6 +151,7 @@ export function Cockpit({ onPanelSelect, onPanelHover, onConsoleClick, ...props 
                   lights={lights.panels.get(id)!}
                   plateMaterial={materials.triangles}
                   lightsMaterial={materials.triangles_lights}
+                  open={openPanel === id}
                   onSelect={onPanelSelect}
                   onHoverChange={onPanelHover}
                 />

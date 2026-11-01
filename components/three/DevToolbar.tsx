@@ -10,6 +10,7 @@ type DevToolbarProps = {
   onFreeModeChange: (freeMode: boolean) => void
   cardTheme: CardTheme
   onCardThemeChange: (theme: CardTheme) => void
+  compact: boolean
 }
 
 // Temporary dev controls: jump between viewpoints, toggle free camera, compare card themes
@@ -20,14 +21,15 @@ export function DevToolbar({
   onFreeModeChange,
   cardTheme,
   onCardThemeChange,
+  compact,
 }: DevToolbarProps) {
   const views: { id: ViewId; label: string }[] = [
     { id: 'overview', label: "Vue d'ensemble" },
     ...PANELS.map(({ id, label }) => ({ id, label })),
   ]
 
-  return (
-    <div className="absolute left-1/2 top-4 flex -translate-x-1/2 flex-wrap items-center gap-2 rounded bg-black/70 p-2 font-mono text-sm text-cyan-300">
+  const controls = (
+    <>
       {views.map(({ id, label }) => (
         <button
           key={id}
@@ -56,6 +58,22 @@ export function DevToolbar({
           ))}
         </select>
       </label>
+    </>
+  )
+
+  // Small screens: folded behind a "DEV" toggle so it does not cover the scene
+  if (compact) {
+    return (
+      <details className="absolute right-2 top-2 z-40 rounded bg-black/80 p-1 font-mono text-xs text-cyan-300">
+        <summary className="cursor-pointer px-2 py-1">DEV</summary>
+        <div className="mt-1 flex max-w-[16rem] flex-wrap items-center gap-1 p-1">{controls}</div>
+      </details>
+    )
+  }
+
+  return (
+    <div className="absolute left-1/2 top-4 flex -translate-x-1/2 flex-wrap items-center gap-2 rounded bg-black/70 p-2 font-mono text-sm text-cyan-300">
+      {controls}
     </div>
   )
 }

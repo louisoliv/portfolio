@@ -1,11 +1,13 @@
 'use client'
 
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import * as THREE from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import { usePrefersReducedMotion } from './usePrefersReducedMotion'
 
 const STAR_COUNT = 4000
+// Phones: a lighter field (the window takes less of the screen anyway)
+const STAR_COUNT_COMPACT = 2500
 // Stars live in a box around the cockpit and loop along z
 const FIELD_HALF_WIDTH = 30
 const FIELD_LENGTH = 60
@@ -66,15 +68,15 @@ const fragmentShader = /* glsl */ `
   }
 `
 
-function createStars() {
-  const positions = new Float32Array(STAR_COUNT * 3)
-  const sizes = new Float32Array(STAR_COUNT)
-  const brightness = new Float32Array(STAR_COUNT)
-  const colors = new Float32Array(STAR_COUNT * 3)
+function createStars(count: number) {
+  const positions = new Float32Array(count * 3)
+  const sizes = new Float32Array(count)
+  const brightness = new Float32Array(count)
+  const colors = new Float32Array(count * 3)
   const color = new THREE.Color()
 
-  for (let i = 0; i < STAR_COUNT; i++) {
-    const halfWidth = i < STAR_COUNT * CORRIDOR_SHARE ? CORRIDOR_HALF_WIDTH : FIELD_HALF_WIDTH
+  for (let i = 0; i < count; i++) {
+    const halfWidth = i < count * CORRIDOR_SHARE ? CORRIDOR_HALF_WIDTH : FIELD_HALF_WIDTH
     let x, y, z
     do {
       x = (Math.random() * 2 - 1) * halfWidth
@@ -99,8 +101,11 @@ function createStars() {
 }
 
 // Animated star field seen through the cockpit windows
-export function Starfield() {
-  const geometry = useMemo(createStars, [])
+export function Starfield({ compact = false }: { compact?: boolean }) {
+  const count = compact ? STAR_COUNT_COMPACT : STAR_COUNT
+  const geometry = useMemo(() => createStars(count), [count])
+  // Passed as a prop, so R3F does not dispose it when it is replaced
+  useEffect(() => () => geometry.dispose(), [geometry])
   const pixelRatio = useThree((state) => state.gl.getPixelRatio())
   const reducedMotion = usePrefersReducedMotion()
   const material = useRef<THREE.ShaderMaterial>(null)

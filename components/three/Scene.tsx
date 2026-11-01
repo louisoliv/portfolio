@@ -6,7 +6,7 @@ import { Canvas, ComputeFunction } from '@react-three/fiber'
 import { PerformanceMonitor, useProgress } from '@react-three/drei'
 import { Cockpit } from './Cockpit'
 import { CameraRig } from './CameraRig'
-import { HeroCard } from './HeroCard'
+import { HeroCard, HeroCardContent } from './HeroCard'
 import { DevToolbar } from './DevToolbar'
 import { PanelCard } from './PanelCard'
 import { ImperialCard, CardTheme } from './ImperialCard'
@@ -14,6 +14,9 @@ import { SECTION_CARDS } from './SectionCards'
 import { PanelLabel } from './PanelLabel'
 import { LoadingScreen } from './LoadingScreen'
 import { Starfield } from './Starfield'
+import { MobileSheet } from './MobileSheet'
+import { MobileNav } from './MobileNav'
+import { useCompactLayout } from './useCompactLayout'
 import { OVERVIEW_VIEW, PANELS, SectionId, ViewId } from './panels'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -41,6 +44,8 @@ export default function Scene() {
   const [cardTheme, setCardTheme] = useState<CardTheme>('cockpit')
   const [heroVisible, setHeroVisible] = useState(true)
   const [hoveredPanel, setHoveredPanel] = useState<SectionId | null>(null)
+  // Phones and small windows: cards in a bottom sheet, section bar instead of reachable panels
+  const compact = useCompactLayout()
   const { progress, active } = useProgress()
   // drei's <Html> elements sit above every other DOM layer (huge z-index), including the
   // boot screen: only mount them once the boot sequence is over
@@ -73,6 +78,16 @@ export default function Scene() {
     }
   }
 
+  // Panel currently zoomed in, if any (its card goes in the bottom sheet in compact layout)
+  const openPanel = PANELS.find((panel) => panel.id === view)
+  const OpenContent = openPanel && SECTION_CARDS[openPanel.id].Content
+
+  // Section bar: "Profil" goes back to the overview with the profile card open
+  const onNavSelect = (id: ViewId) => {
+    setView(id)
+    if (id === 'overview') setHeroVisible(true)
+  }
+
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setView('overview')
@@ -95,20 +110,20 @@ export default function Scene() {
         <color attach="background" args={['#000000']} />
         <ambientLight intensity={0.6} />
         <pointLight position={[0, 0.3, 0]} intensity={2} distance={4} />
-        <Starfield />
+        <Starfield compact={compact} />
         {/* Measured only after boot: loading the model is expected to be slow */}
         {booted && <PerformanceMonitor bounds={PERF_BOUNDS} onDecline={onPerfDecline} />}
         {/* Loading is shown by the LoadingScreen overlay below */}
         <Suspense fallback={null}>
-          <Cockpit onPanelSelect={setView} onPanelHover={onPanelHover} onConsoleClick={onConsoleClick} />
-          <HeroCard visible={booted && view === 'overview' && heroVisible} theme={cardTheme} onNavigate={setView} />
+          <Cockpit openPanel={openPanel?.id} onPanelSelect={setView} onPanelHover={onPanelHover} onConsoleClick={onConsoleClick} />
+          <HeroCard visible={booted && !compact && view === 'overview' && heroVisible} theme={cardTheme} onNavigate={setView} />
           {booted && PANELS.map((panel) => {
             const { code, Content } = SECTION_CARDS[panel.id]
             return (
               <Fragment key={panel.id}>
                 {/* The open panel's card already shows its name */}
                 {view !== panel.id && <PanelLabel panel={panel} code={code} highlighted={hoveredPanel === panel.id} />}
-                <PanelCard panel={panel} visible={view === panel.id}>
+                <PanelCard panel={panel} visible={!compact && view === panel.id}>
                   <ImperialCard code={code} title={panel.label} theme={cardTheme}>
                     <Content />
                   </ImperialCard>
@@ -117,9 +132,9 @@ export default function Scene() {
             )
           })}
         </Suspense>
-        <CameraRig view={view} freeMode={isDev && freeMode} />
+        <CameraRig view={view} compact={compact} freeMode={isDev && freeMode} />
       </Canvas>
-      {view !== 'overview' && (
+      {!compact && view !== 'overview' && (
         <button
           type="button"
           onClick={() => setView('overview')}
@@ -128,6 +143,19 @@ export default function Scene() {
           ← Vue d&apos;ensemble
         </button>
       )}
+      {compact && booted && view === 'overview' && heroVisible && (
+        <MobileSheet label="Profil pilote" onClose={() => setHeroVisible(false)}>
+          <HeroCardContent theme={cardTheme} onNavigate={setView} />
+        </MobileSheet>
+      )}
+      {compact && booted && openPanel && OpenContent && (
+        <MobileSheet label={openPanel.label} onClose={() => setView('overview')}>
+          <ImperialCard code={SECTION_CARDS[openPanel.id].code} title={openPanel.label} theme={cardTheme}>
+            <OpenContent />
+          </ImperialCard>
+        </MobileSheet>
+      )}
+      {compact && booted && <MobileNav view={view} onSelect={onNavSelect} />}
       {showSlowBanner && (
         <div
           role="status"
@@ -160,7 +188,9 @@ export default function Scene() {
       </Link>
       <LoadingScreen progress={progress} done={!active && progress === 100} onFinished={onBootFinished} />
       {/* Required by the model's CC BY 4.0 licence */}
-      <p className="absolute bottom-2 right-3 font-mono text-[10px] text-zinc-500">
+      <p
+        className={`absolute right-3 font-mono text-[10px] text-zinc-500 ${compact ? 'bottom-16 left-3 text-right' : 'bottom-2'}`}
+      >
         « Tie Fighter Cockpit Version 2 » by MichaelEGA, licensed under{' '}
         <a
           href="https://creativecommons.org/licenses/by/4.0/"
@@ -179,6 +209,7 @@ export default function Scene() {
           onFreeModeChange={setFreeMode}
           cardTheme={cardTheme}
           onCardThemeChange={setCardTheme}
+          compact={compact}
         />
       )}
     </div>

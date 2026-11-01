@@ -17,6 +17,8 @@ type InteractivePanelProps = {
   lights: THREE.BufferGeometry
   plateMaterial: THREE.Material
   lightsMaterial: THREE.Material
+  // This panel's section is the one being read: it stays highlighted (no hover on touch screens)
+  open: boolean
   onSelect: (id: SectionId) => void
   onHoverChange: (id: SectionId, hovered: boolean) => void
 }
@@ -27,11 +29,13 @@ export function InteractivePanel({
   lights,
   plateMaterial,
   lightsMaterial,
+  open,
   onSelect,
   onHoverChange,
 }: InteractivePanelProps) {
   const group = useRef<THREE.Group>(null)
   const [hovered, setHovered] = useState(false)
+  const highlighted = hovered || open
   const reducedMotion = usePrefersReducedMotion()
   const lifted = useMemo(() => getLocalPanelNormal(id).multiplyScalar(HOVER_LIFT), [id])
   useCursor(hovered)
@@ -41,7 +45,7 @@ export function InteractivePanel({
 
   useFrame((_, delta) => {
     if (!group.current) return
-    const target = hovered ? lifted : new THREE.Vector3()
+    const target = highlighted ? lifted : new THREE.Vector3()
     if (reducedMotion) group.current.position.copy(target)
     else group.current.position.lerp(target, 1 - Math.exp(-12 * delta))
   })
@@ -63,7 +67,7 @@ export function InteractivePanel({
   return (
     <group ref={group}>
       <mesh geometry={plate} material={plateMaterial} {...handlers}>
-        <Edges visible={hovered} threshold={15} lineWidth={2} color="#ff4d4d" />
+        <Edges visible={highlighted} threshold={15} lineWidth={2} color="#ff4d4d" />
       </mesh>
       <mesh geometry={lights} material={lightsMaterial} {...handlers} />
     </group>

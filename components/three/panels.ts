@@ -53,17 +53,21 @@ function getCardDirection(panel: Panel): Vec3 {
   return [(side * nz) / length, 0, (side * -nx) / length]
 }
 
-export function getCameraView(id: ViewId): CameraView {
+// compactDistance: compact layout, where the card is in a bottom sheet instead of beside the panel
+export function getCameraView(id: ViewId, compactDistance?: number): CameraView {
   const panel = PANELS.find((p) => p.id === id)
   if (!panel) return OVERVIEW_VIEW
   // Aim between the panel and its card so both are centered on screen,
-  // and shift the camera by the same amount to keep facing the wall straight on
+  // and shift the camera by the same amount to keep facing the wall straight on.
+  // Compact layout: the card is not in the scene, aim at the panel itself.
+  const compact = compactDistance !== undefined
   const [dx, , dz] = getCardDirection(panel)
-  const shift = CARD_SIDE_OFFSET / 2
+  const shift = compact ? 0 : CARD_SIDE_OFFSET / 2
+  const distance = compactDistance ?? PANEL_VIEW_DISTANCE
   const target: Vec3 = [panel.position[0] + dx * shift, panel.position[1], panel.position[2] + dz * shift]
   const [nx, ny, nz] = panel.normal
   return {
-    position: [target[0] + nx * PANEL_VIEW_DISTANCE, target[1] + ny * PANEL_VIEW_DISTANCE, target[2] + nz * PANEL_VIEW_DISTANCE],
+    position: [target[0] + nx * distance, target[1] + ny * distance, target[2] + nz * distance],
     target,
   }
 }
