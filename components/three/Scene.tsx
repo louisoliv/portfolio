@@ -1,6 +1,7 @@
 'use client'
 
 import { Fragment, Suspense, useCallback, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { Canvas, ComputeFunction } from '@react-three/fiber'
 import { useProgress } from '@react-three/drei'
 import { Cockpit } from './Cockpit'
@@ -101,6 +102,13 @@ export default function Scene() {
           ← Vue d&apos;ensemble
         </button>
       )}
+      {/* Text version for hurried visitors, keyboard and screen reader users */}
+      <Link
+        href="/classique"
+        className="absolute left-3 top-3 rounded border border-zinc-600/60 bg-black/60 px-3 py-1.5 font-mono text-xs uppercase tracking-widest text-zinc-300 hover:border-red-500/60 hover:text-red-300 focus-visible:border-red-500 focus-visible:outline-none"
+      >
+        Version classique
+      </Link>
       <LoadingScreen progress={progress} done={!active && progress === 100} onFinished={onBootFinished} />
       {/* Required by the model's CC BY 4.0 licence */}
       <p className="absolute bottom-2 right-3 font-mono text-[10px] text-zinc-500">
