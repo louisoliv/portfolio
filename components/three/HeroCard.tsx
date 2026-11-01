@@ -49,10 +49,11 @@ export function HeroCard({ visible, theme, onNavigate }: HeroCardProps) {
               {HERO.availability}
             </p>
 
-            <h1 className="mt-2 text-3xl font-semibold uppercase tracking-widest text-hud-title">
+            {/* Not a heading: the page h1 lives in the server-rendered text version (PortfolioText) */}
+            <p className="mt-2 text-3xl font-semibold uppercase tracking-widest text-hud-title">
               {`${HERO.firstName} `}
               <span className="text-hud-accent">{HERO.lastName}</span>
-            </h1>
+            </p>
             <p className="mt-1 text-sm uppercase tracking-[0.2em] text-hud-muted">{HERO.role}</p>
 
             <p className="mt-3 text-xs leading-relaxed text-hud-fg/80">

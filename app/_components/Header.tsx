@@ -38,6 +38,17 @@ export const Header = () => {
 
         <div className="flex-1 md:flex-none" />
 
+        {/* Back to the 3D version, kept outside the nav so it stays visible on mobile */}
+        <Link
+          href="/"
+          className={cn(
+            buttonVariants({ variant: "outline" }),
+            "h-8 px-3 rounded-lg border-border/60 font-mono text-xs uppercase tracking-widest hover:border-primary/50 hover:bg-primary/5 transition-colors"
+          )}
+        >
+          Cockpit 3D
+        </Link>
+
         {/* Icons */}
         <ul className="flex items-center gap-2">
           <Link

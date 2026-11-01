@@ -11,6 +11,8 @@ const AnekTamil = Anek_Tamil({
 });
 
 export const metadata: Metadata = {
+  // Base for absolute URLs such as canonical links: change it if the site gets its own domain
+  metadataBase: new URL("https://portfolio-louisolivier.vercel.app"),
   title: "Louis OLIVIER ",
   description: "Online portfolio with React, Next and Tailwind",
 };

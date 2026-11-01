@@ -68,7 +68,11 @@ export default function Scene() {
     <div className="relative h-full w-full overflow-hidden">
       <Canvas
         camera={{ position: OVERVIEW_VIEW.position, fov: 70, near: 0.01, far: 100 }}
-        onCreated={({ setEvents }) => setEvents({ compute: computePointer })}
+        onCreated={({ gl, setEvents }) => {
+          setEvents({ compute: computePointer })
+          // Decorative for assistive tech: the content is in the page's text version
+          gl.domElement.setAttribute('aria-hidden', 'true')
+        }}
       >
         <color attach="background" args={['#000000']} />
         <ambientLight intensity={0.6} />

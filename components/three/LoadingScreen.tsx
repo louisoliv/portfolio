@@ -78,7 +78,8 @@ export function LoadingScreen({ progress, done = false, onFinished }: LoadingScr
           <span aria-hidden className="mr-2 inline-block size-1.5 bg-red-500 motion-safe:animate-pulse" />
           SEC-00 {'//'} Séquence de démarrage
         </p>
-        <h1 className="mt-3 text-lg uppercase tracking-[0.2em] text-zinc-100">Initialisation des systèmes…</h1>
+        {/* Not a heading: the page h1 is the name, in the text version */}
+        <p className="mt-3 text-lg uppercase tracking-[0.2em] text-zinc-100">Initialisation des systèmes…</p>
 
         <div
           role="progressbar"

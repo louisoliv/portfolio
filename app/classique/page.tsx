@@ -9,7 +9,9 @@ import { Footrer } from "../_components/Footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Louis OLIVIER — Version classique",
+  title: "Louis OLIVIER - Version classique",
+  // Same content as the cockpit's text version: search engines should list the cockpit
+  alternates: { canonical: "/" },
 };
 
 export default function Home() {
