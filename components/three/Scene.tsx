@@ -13,6 +13,7 @@ import { ImperialCard, CardTheme } from './ImperialCard'
 import { SECTION_CARDS } from './SectionCards'
 import { PanelLabel } from './PanelLabel'
 import { LoadingScreen } from './LoadingScreen'
+import { Starfield } from './Starfield'
 import { OVERVIEW_VIEW, PANELS, SectionId, ViewId } from './panels'
 
 const isDev = process.env.NODE_ENV === 'development'
@@ -72,6 +73,7 @@ export default function Scene() {
         <color attach="background" args={['#000000']} />
         <ambientLight intensity={0.6} />
         <pointLight position={[0, 0.3, 0]} intensity={2} distance={4} />
+        <Starfield />
         {/* Loading is shown by the LoadingScreen overlay below */}
         <Suspense fallback={null}>
           <Cockpit onPanelSelect={setView} onPanelHover={onPanelHover} onConsoleClick={onConsoleClick} />
