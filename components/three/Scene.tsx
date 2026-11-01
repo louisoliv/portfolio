@@ -3,7 +3,7 @@
 import { Fragment, Suspense, useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Canvas, ComputeFunction } from '@react-three/fiber'
-import { useProgress } from '@react-three/drei'
+import { PerformanceMonitor, useProgress } from '@react-three/drei'
 import { Cockpit } from './Cockpit'
 import { CameraRig } from './CameraRig'
 import { HeroCard } from './HeroCard'
@@ -17,6 +17,12 @@ import { Starfield } from './Starfield'
 import { OVERVIEW_VIEW, PANELS, SectionId, ViewId } from './panels'
 
 const isDev = process.env.NODE_ENV === 'development'
+
+// Rendering resolution: device pixel ratio capped at 2, dropped to 1 when the scene struggles
+const MAX_DPR = 2
+const LOW_DPR = 1
+// Average frame rate below 25 fps counts as struggling (upper bound: back to fine)
+const PERF_BOUNDS = (): [number, number] => [25, 55]
 
 // R3F computes the pointer from offsetX/Y, which are relative to the hovered element:
 // over an <Html> card they point to the wrong place in the scene. Use the canvas rect instead.
@@ -40,6 +46,17 @@ export default function Scene() {
   // boot screen: only mount them once the boot sequence is over
   const [booted, setBooted] = useState(false)
   const onBootFinished = useCallback(() => setBooted(true), [])
+
+  // Measured smoothness: the first drop below PERF_BOUNDS lowers the resolution,
+  // the second one offers the classic page (never forced: it may be a passing slowdown)
+  const [dpr, setDpr] = useState(() => Math.min(window.devicePixelRatio, MAX_DPR))
+  const [perfDeclines, setPerfDeclines] = useState(0)
+  const [slowBannerDismissed, setSlowBannerDismissed] = useState(false)
+  const onPerfDecline = useCallback(() => setPerfDeclines((count) => count + 1), [])
+  useEffect(() => {
+    if (perfDeclines === 1) setDpr(LOW_DPR)
+  }, [perfDeclines])
+  const showSlowBanner = perfDeclines >= 2 && !slowBannerDismissed
 
   // Stable: InteractivePanel reports through an effect that depends on it
   const onPanelHover = useCallback((id: SectionId, hovered: boolean) => {
@@ -67,6 +84,7 @@ export default function Scene() {
   return (
     <div className="relative h-full w-full overflow-hidden">
       <Canvas
+        dpr={dpr}
         camera={{ position: OVERVIEW_VIEW.position, fov: 70, near: 0.01, far: 100 }}
         onCreated={({ gl, setEvents }) => {
           setEvents({ compute: computePointer })
@@ -78,6 +96,8 @@ export default function Scene() {
         <ambientLight intensity={0.6} />
         <pointLight position={[0, 0.3, 0]} intensity={2} distance={4} />
         <Starfield />
+        {/* Measured only after boot: loading the model is expected to be slow */}
+        {booted && <PerformanceMonitor bounds={PERF_BOUNDS} onDecline={onPerfDecline} />}
         {/* Loading is shown by the LoadingScreen overlay below */}
         <Suspense fallback={null}>
           <Cockpit onPanelSelect={setView} onPanelHover={onPanelHover} onConsoleClick={onConsoleClick} />
@@ -107,6 +127,29 @@ export default function Scene() {
         >
           ← Vue d&apos;ensemble
         </button>
+      )}
+      {showSlowBanner && (
+        <div
+          role="status"
+          className="absolute left-1/2 top-16 flex w-[min(36rem,calc(100%-2rem))] -translate-x-1/2 flex-wrap items-center justify-center gap-x-4 gap-y-2 rounded border border-red-500/60 bg-black/85 px-4 py-3 text-center font-mono text-xs text-zinc-200"
+        >
+          <span>Ton appareil semble avoir du mal à afficher le cockpit.</span>
+          <span className="flex gap-2">
+            <Link
+              href="/classique"
+              className="rounded border border-red-500/70 px-3 py-1 uppercase tracking-widest text-red-300 hover:bg-red-500/20"
+            >
+              Version classique
+            </Link>
+            <button
+              type="button"
+              onClick={() => setSlowBannerDismissed(true)}
+              className="rounded border border-zinc-600 px-3 py-1 uppercase tracking-widest text-zinc-300 hover:border-zinc-400"
+            >
+              Rester ici
+            </button>
+          </span>
+        </div>
       )}
       {/* Text version for hurried visitors, keyboard and screen reader users */}
       <Link
