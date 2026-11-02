@@ -1,19 +1,30 @@
 import Image from 'next/image'
-import { ArrowUpRight } from 'lucide-react'
-import { EXPERIENCES, SIDE_PROJECTS, WORKS, SKILL_GROUPS, EMAIL, LINKEDIN } from '@/app/_data/portfolio'
+import { ArrowUpRight, FileText, MapPin } from 'lucide-react'
+import {
+  EXPERIENCES,
+  SIDE_PROJECTS,
+  WORKS,
+  SKILL_GROUPS,
+  EMAIL,
+  LINKEDIN,
+  GITHUB,
+  CV,
+  LOCATIONS,
+} from '@/app/_data/portfolio'
+import { GithubIcon } from '@/app/_components/icons/GithubIcon'
 import { cn } from '@/lib/utils'
 import { SectionId } from './panels'
 
 // Cards are rendered by drei's <Html> in a separate React root, outside the
-// Next.js router: plain <a> instead of next/link. External links open a new tab
-// so the visitor keeps their place in the cockpit.
+// Next.js router: plain <a> instead of next/link. External links and documents (CV)
+// open a new tab so the visitor keeps their place in the cockpit.
 export function ExternalLink({ href, className, children }: { href: string; className?: string; children: React.ReactNode }) {
-  const external = href.startsWith('http')
+  const newTab = href.startsWith('http') || href.endsWith('.pdf')
   return (
     <a
       href={href}
       className={className}
-      {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+      {...(newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
     >
       {children}
     </a>
@@ -141,13 +152,22 @@ function SkillsCard() {
 }
 
 function ContactCard() {
+  const logo = (src: string, alt: string) => (
+    <Image src={src} alt={alt} width={20} height={20} className="object-contain" />
+  )
   const contacts = [
-    { label: 'Email', value: EMAIL.address, url: EMAIL.url, icon: EMAIL.icon },
-    { label: 'LinkedIn', value: 'Louis Olivier', url: LINKEDIN.url, icon: LINKEDIN.icon },
+    { label: 'Email', value: EMAIL.address, url: EMAIL.url, icon: logo(EMAIL.icon, 'Email') },
+    { label: 'LinkedIn', value: 'Louis Olivier', url: LINKEDIN.url, icon: logo(LINKEDIN.icon, 'LinkedIn') },
+    { label: 'GitHub', value: GITHUB.handle, url: GITHUB.url, icon: <GithubIcon size={18} aria-hidden className="text-black" /> },
+    { label: CV.label, value: CV.description, url: CV.url, icon: <FileText size={18} aria-hidden className="text-black" /> },
   ]
   return (
     <div>
-      <p className="mb-3 text-xs text-hud-fg/70">Un projet, une opportunité ? N&apos;hésite pas.</p>
+      <p className="text-xs text-hud-fg/70">Un projet, une opportunité ? N&apos;hésite pas.</p>
+      <p className="mb-3 mt-1 flex items-center gap-1.5 text-xs text-hud-muted">
+        <MapPin size={12} aria-hidden className="text-hud-accent" />
+        {LOCATIONS}
+      </p>
       <ul className="space-y-2">
         {contacts.map((contact) => (
           <li key={contact.label}>
@@ -155,9 +175,7 @@ function ContactCard() {
               href={contact.url}
               className="group flex items-center gap-3 border border-hud-line/30 bg-hud-line/5 p-2 transition-colors hover:border-hud-line/70 hover:bg-hud-line/10"
             >
-              <span className="flex size-8 shrink-0 items-center justify-center bg-hud-fg/90">
-                <Image src={contact.icon} alt={contact.label} width={20} height={20} className="object-contain" />
-              </span>
+              <span className="flex size-8 shrink-0 items-center justify-center bg-hud-fg/90">{contact.icon}</span>
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-hud-title">{contact.label}</p>
                 <p className="truncate text-xs text-hud-fg/70">{contact.value}</p>

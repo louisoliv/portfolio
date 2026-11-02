@@ -20,14 +20,18 @@ import { PythonIcon } from "../_components/icons/PythonLogo";
 import { FlaskIcon } from "../_components/icons/FlaskLogo";
 import { DartIcon } from "../_components/icons/DartLogo";
 import { FlutterIcon } from "../_components/icons/FlutterLogo";
+import { GITHUB, LINKEDIN } from "./profiles";
+
+// GitHub and LinkedIn profiles live in profiles.ts (see there why)
+export { GITHUB, LINKEDIN };
 
 // ─── Hero ────────────────────────────────────────────────────────────────
 
 export const HERO = {
-  availability: "Disponible · Alternance",
+  availability: "En alternance · ROAV7",
   firstName: "Louis",
   lastName: "OLIVIER",
-  role: "Full Stack Developer",
+  role: "Concepteur d'application · Développeur Full Stack",
   // The intro sentence is split around its two inline links
   intro: {
     beforeSchool:
@@ -39,7 +43,7 @@ export const HERO = {
     },
     afterSchool:
       "Rouen et en alternance, je construis des projets concrets du frontend au backend - et je publie sur",
-    github: { label: "GitHub", url: "https://github.com/louisoliv" },
+    github: { label: "GitHub", url: GITHUB.url },
     end: ".",
   },
 };
@@ -50,12 +54,14 @@ export const TECH_TAGS = [
   "Golang",
   "Python",
   "Docker",
-  "SQL",
+  "Vagrant",
+  "SQL · SQLite",
+  "Electron",
 ];
 
 export const STATS = [
   { value: "50+", label: "Projets" },
-  { value: "2,5", label: "Ans de code" },
+  { value: "3", label: "Ans de code" },
   { value: "10+", label: "Techs" },
 ];
 
@@ -63,9 +69,18 @@ export const STATS = [
 
 export const EXPERIENCES: ExperienceItemProps[] = [
   {
+    title: "Développeur R&D",
+    company: "Entreprise ROAV7 · Alternance",
+    companyUrl: "https://www.roav7.com/",
+    date: "2026 - 2028",
+    description:
+      "Développement d'un logiciel pour les données collectées par drone. Travail en autonomie, encadré par ma tutrice, responsable du pôle R&D. Stack Node.js, Electron, React, TypeScript, Tailwind et SQLite3.",
+    badge: "Alternance",
+    badgeVariant: "alternance",
+  },
+  {
     title: "Développeur Full Stack",
-    company: "Entreprise Arès (franchisé McDonalds) · Alternance",
-    companyUrl: "#",
+    company: "Entreprise Arès (franchisé McDonald's) · Alternance terminée",
     date: "2025 - 2026",
     description:
       "Développement d'une application métier (ERP McDonald's) en environnement professionnel. Travail solitaire puis en équipe (sur 2 mois), gestion de versions Git, déploiement continu. Stack Python, Flask, SQLAlchemy, React, TypeScript, Tailwind, Docker et PostgreSQL.",
@@ -76,7 +91,7 @@ export const EXPERIENCES: ExperienceItemProps[] = [
     title: "Étudiant développeur",
     company: "Zone01 · Rouen, Normandie",
     companyUrl: "https://zone01rouennormandie.org/",
-    date: "2023 - 2026",
+    date: "2023 - 2028",
     description:
       "École de code par la pratique - projets collaboratifs en Go, JavaScript et Rust. Pédagogie basée sur des projets réels et du pair-programming. Développement de l'autonomie et de la rigueur technique.",
     badge: "Formation",
@@ -234,6 +249,14 @@ export const SKILL_GROUPS: SkillGroup[] = [
         // level: "Maîtrisé",
       },
       {
+        icon: (
+          <span className="text-green-500 font-bold text-[11px] font-mono leading-none">
+            NODE
+          </span>
+        ),
+        name: "Node.js",
+      },
+      {
         icon: <PythonIcon size={22} />,
         name: "Python",
         // level: "Solide",
@@ -250,10 +273,26 @@ export const SKILL_GROUPS: SkillGroup[] = [
       },
       {
         icon: (
+          <span className="text-blue-400 font-bold text-[11px] font-mono leading-none">
+            VG
+          </span>
+        ),
+        name: "Vagrant",
+      },
+      {
+        icon: (
           <span className="text-orange-400 text-base leading-none">🗄️</span>
         ),
         name: "SQL · PostgreSQL",
         // level: "En cours",
+      },
+      {
+        icon: (
+          <span className="text-sky-500 font-bold text-[11px] font-mono leading-none">
+            SQ3
+          </span>
+        ),
+        name: "SQLite3",
       },
       {
         icon: (
@@ -267,7 +306,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
     ],
   },
   {
-    category: "Mobile & Outils",
+    category: "Mobile, Desktop & Outils",
     skills: [
       {
         icon: <DartIcon size={22} />,
@@ -280,9 +319,25 @@ export const SKILL_GROUPS: SkillGroup[] = [
         // level: "En cours",
       },
       {
+        icon: (
+          <span className="text-cyan-300 font-bold text-[11px] font-mono leading-none">
+            EL
+          </span>
+        ),
+        name: "Electron",
+      },
+      {
         icon: <span className="text-orange-500 text-base leading-none">⎇</span>,
         name: "Git · GitHub",
         // level: "Solide",
+      },
+      {
+        icon: (
+          <span className="text-lime-400 font-bold text-[11px] font-mono leading-none">
+            VT
+          </span>
+        ),
+        name: "Vitest",
       },
       {
         icon: (
@@ -302,6 +357,14 @@ export const SKILL_GROUPS: SkillGroup[] = [
         name: "Linux · Bash",
         // level: "Maîtrisé",
       },
+      {
+        icon: (
+          <span className="text-violet-400 font-bold text-[11px] font-mono leading-none">
+            IA
+          </span>
+        ),
+        name: "IA · Claude, Copilot, Gemini",
+      },
     ],
   },
 ];
@@ -318,7 +381,11 @@ export const EMAIL = {
   icon: "https://banner2.cleanpng.com/20240403/ras/transparent-gmail-icon-google-mail-logo-with-vibrant-colors-and-m660d4ec2bd9db0.46699070.webp",
 };
 
-export const LINKEDIN = {
-  url: "https://www.linkedin.com/in/louis-olivier",
-  icon: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png",
+// The PDF goes in public/, it is served at this path
+export const CV = {
+  label: "CV",
+  description: "Télécharger mon CV (PDF)",
+  url: "/cv-louis-olivier.pdf",
 };
+
+export const LOCATIONS = "Rouen · Le Havre";

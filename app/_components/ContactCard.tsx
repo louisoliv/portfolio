@@ -9,6 +9,8 @@ export type ContactCardProps = {
   name: string;
   descritpon: string;
   url: string;
+  // Used instead of mediumImage when the service has no hosted logo (GitHub, CV)
+  icon?: React.ReactNode;
 };
 
 export const ContactCard = (props: ContactCardProps) => {
@@ -17,13 +19,15 @@ export const ContactCard = (props: ContactCardProps) => {
       <Card className="p-3 bg-accent/10 hover:bg-accent/30 transition-colors group flex items-center gap-4 border-border/60 hover:border-primary/30">
         {/* Icône service */}
         <div className="size-9 rounded-lg bg-accent flex items-center justify-center shrink-0 overflow-hidden">
-          <Image
-            src={props.mediumImage}
-            alt={props.name}
-            width={22}
-            height={22}
-            className="object-contain"
-          />
+          {props.icon ?? (
+            <Image
+              src={props.mediumImage}
+              alt={props.name}
+              width={22}
+              height={22}
+              className="object-contain"
+            />
+          )}
         </div>
 
         <div className="mr-auto min-w-0">

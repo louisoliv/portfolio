@@ -6,6 +6,7 @@ import { GithubIcon } from "./icons/GithubIcon";
 import { LinkedInIcon } from "./icons/LinkedIn";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { GITHUB, LINKEDIN } from "../_data/profiles";
 
 const NAV_LINKS = [
   { label: "Expérience", href: "#experience" },
@@ -52,7 +53,8 @@ export const Header = () => {
         {/* Icons */}
         <ul className="flex items-center gap-2">
           <Link
-            href="https://github.com/louisoliv/"
+            href={GITHUB.url}
+            aria-label="GitHub"
             className={cn(
               buttonVariants({ variant: "outline" }),
               "size-8 p-0 rounded-lg border-border/60 hover:border-primary/50 hover:bg-primary/5 transition-colors"
@@ -61,7 +63,8 @@ export const Header = () => {
             <GithubIcon size={16} className="text-foreground" />
           </Link>
           <Link
-            href="https://linkedin.com"
+            href={LINKEDIN.url}
+            aria-label="LinkedIn"
             className={cn(
               buttonVariants({ variant: "outline" }),
               "size-8 p-0 rounded-lg border-border/60 hover:border-primary/50 hover:bg-primary/5 transition-colors"

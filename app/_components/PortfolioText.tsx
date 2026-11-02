@@ -8,6 +8,9 @@ import {
   SKILL_GROUPS,
   EMAIL,
   LINKEDIN,
+  GITHUB,
+  CV,
+  LOCATIONS,
 } from "../_data/portfolio";
 
 // Invisible on screen, so kept out of the Tab order: sighted keyboard users would land on
@@ -104,12 +107,19 @@ export const PortfolioText = () => {
 
       <section aria-labelledby="text-contact">
         <h2 id="text-contact">Contact</h2>
+        <p>{LOCATIONS}</p>
         <ul>
           <li>
             <TextLink href={EMAIL.url}>{EMAIL.address}</TextLink>
           </li>
           <li>
             <TextLink href={LINKEDIN.url}>LinkedIn</TextLink>
+          </li>
+          <li>
+            <TextLink href={GITHUB.url}>GitHub</TextLink>
+          </li>
+          <li>
+            <TextLink href={CV.url}>{CV.description}</TextLink>
           </li>
         </ul>
       </section>
