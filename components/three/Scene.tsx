@@ -1,7 +1,8 @@
 'use client'
 
-import { Fragment, Suspense, useCallback, useEffect, useState } from 'react'
+import { Fragment, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { Volume2, VolumeX } from 'lucide-react'
 import { Canvas, ComputeFunction } from '@react-three/fiber'
 import { PerformanceMonitor, useProgress } from '@react-three/drei'
 import { Cockpit } from './Cockpit'
@@ -14,13 +15,16 @@ import { SECTION_CARDS } from './SectionCards'
 import { PanelLabel } from './PanelLabel'
 import { LoadingScreen } from './LoadingScreen'
 import { Starfield } from './Starfield'
-import { CockpitLights, LightingPreset } from './CockpitLights'
+import { CockpitLights } from './CockpitLights'
+import { playSound, readStoredSoundMuted, setSoundMuted } from './sounds'
 import { MobileSheet } from './MobileSheet'
 import { MobileNav } from './MobileNav'
 import { useCompactLayout } from './useCompactLayout'
 import { OVERVIEW_VIEW, PANELS, SectionId, ViewId } from './panels'
 
 const isDev = process.env.NODE_ENV === 'development'
+
+const ALERT_DURATION_MS = 8000
 
 // Rendering resolution: device pixel ratio capped at 2, dropped to 1 when the scene struggles
 const MAX_DPR = 2
@@ -41,9 +45,42 @@ const computePointer: ComputeFunction = (event, state) => {
 
 export default function Scene() {
   const [view, setView] = useState<ViewId>('overview')
+  // Every camera move goes through here, so that each one has its sound
+  const goTo = useCallback(
+    (id: ViewId) => {
+      if (id === view) return
+      playSound(id === 'overview' ? 'overview' : 'sectionOpen')
+      setView(id)
+    },
+    [view],
+  )
   const [freeMode, setFreeMode] = useState(false)
   const [cardTheme, setCardTheme] = useState<CardTheme>('cockpit')
-  const [lighting, setLighting] = useState<LightingPreset>('dark')
+  // Red alert: triggered by the console's left button, ends by itself
+  const [alertActive, setAlertActive] = useState(false)
+  const alertTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const onAlertClick = () => {
+    if (alertTimer.current) return
+    playSound('alert')
+    setAlertActive(true)
+    alertTimer.current = setTimeout(() => {
+      setAlertActive(false)
+      alertTimer.current = null
+    }, ALERT_DURATION_MS)
+  }
+  useEffect(
+    () => () => {
+      if (alertTimer.current) clearTimeout(alertTimer.current)
+    },
+    [],
+  )
+
+  const [muted, setMuted] = useState(false)
+  useEffect(() => setMuted(readStoredSoundMuted()), [])
+  const toggleMuted = () => {
+    setSoundMuted(!muted)
+    setMuted(!muted)
+  }
   const [heroVisible, setHeroVisible] = useState(true)
   const [hoveredPanel, setHoveredPanel] = useState<SectionId | null>(null)
   // Phones and small windows: cards in a bottom sheet, section bar instead of reachable panels
@@ -73,9 +110,10 @@ export default function Scene() {
   // The targeting computer toggles the overview card; from a panel view it brings the card back
   const onConsoleClick = () => {
     if (view === 'overview') {
-      setHeroVisible((visible) => !visible)
+      playSound(heroVisible ? 'heroHide' : 'heroShow')
+      setHeroVisible(!heroVisible)
     } else {
-      setView('overview')
+      goTo('overview')
       setHeroVisible(true)
     }
   }
@@ -86,17 +124,18 @@ export default function Scene() {
 
   // Section bar: "Profil" goes back to the overview with the profile card open
   const onNavSelect = (id: ViewId) => {
-    setView(id)
+    if (id === 'overview' && view === 'overview' && !heroVisible) playSound('heroShow')
+    goTo(id)
     if (id === 'overview') setHeroVisible(true)
   }
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setView('overview')
+      if (e.key === 'Escape') goTo('overview')
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [])
+  }, [goTo])
 
   return (
     <div className="relative h-full w-full overflow-hidden">
@@ -110,14 +149,21 @@ export default function Scene() {
         }}
       >
         <color attach="background" args={['#000000']} />
-        <CockpitLights preset={lighting} />
+        <CockpitLights alert={alertActive} />
         <Starfield compact={compact} />
         {/* Measured only after boot: loading the model is expected to be slow */}
         {booted && <PerformanceMonitor bounds={PERF_BOUNDS} onDecline={onPerfDecline} />}
         {/* Loading is shown by the LoadingScreen overlay below */}
         <Suspense fallback={null}>
-          <Cockpit openPanel={openPanel?.id} onPanelSelect={setView} onPanelHover={onPanelHover} onConsoleClick={onConsoleClick} />
-          <HeroCard visible={booted && !compact && view === 'overview' && heroVisible} theme={cardTheme} onNavigate={setView} />
+          <Cockpit
+            openPanel={openPanel?.id}
+            onPanelSelect={goTo}
+            onPanelHover={onPanelHover}
+            onConsoleClick={onConsoleClick}
+            onAlertClick={onAlertClick}
+            alertActive={alertActive}
+          />
+          <HeroCard visible={booted && !compact && view === 'overview' && heroVisible} theme={cardTheme} onNavigate={goTo} />
           {booted && PANELS.map((panel) => {
             const { code, Content } = SECTION_CARDS[panel.id]
             return (
@@ -138,19 +184,25 @@ export default function Scene() {
       {!compact && view !== 'overview' && (
         <button
           type="button"
-          onClick={() => setView('overview')}
+          onClick={() => goTo('overview')}
           className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded border border-red-500/60 bg-black/70 px-4 py-2 font-mono text-sm text-red-400 hover:border-red-400 hover:text-red-300"
         >
           ← Vue d&apos;ensemble
         </button>
       )}
       {compact && booted && view === 'overview' && heroVisible && (
-        <MobileSheet label="Profil pilote" onClose={() => setHeroVisible(false)}>
-          <HeroCardContent theme={cardTheme} onNavigate={setView} />
+        <MobileSheet
+          label="Profil pilote"
+          onClose={() => {
+            playSound('heroHide')
+            setHeroVisible(false)
+          }}
+        >
+          <HeroCardContent theme={cardTheme} onNavigate={goTo} />
         </MobileSheet>
       )}
       {compact && booted && openPanel && OpenContent && (
-        <MobileSheet label={openPanel.label} onClose={() => setView('overview')}>
+        <MobileSheet label={openPanel.label} onClose={() => goTo('overview')}>
           <ImperialCard code={SECTION_CARDS[openPanel.id].code} title={openPanel.label} theme={cardTheme}>
             <OpenContent />
           </ImperialCard>
@@ -180,13 +232,24 @@ export default function Scene() {
           </span>
         </div>
       )}
-      {/* Text version for hurried visitors, keyboard and screen reader users */}
-      <Link
-        href="/classique"
-        className="absolute left-3 top-3 rounded border border-zinc-600/60 bg-black/60 px-3 py-1.5 font-mono text-xs uppercase tracking-widest text-zinc-300 hover:border-red-500/60 hover:text-red-300 focus-visible:border-red-500 focus-visible:outline-none"
-      >
-        Version classique
-      </Link>
+      <div className="absolute left-3 top-3 flex items-center gap-2">
+        {/* Text version for hurried visitors, keyboard and screen reader users */}
+        <Link
+          href="/classique"
+          className="rounded border border-zinc-600/60 bg-black/60 px-3 py-1.5 font-mono text-xs uppercase tracking-widest text-zinc-300 hover:border-red-500/60 hover:text-red-300 focus-visible:border-red-500 focus-visible:outline-none"
+        >
+          Version classique
+        </Link>
+        <button
+          type="button"
+          onClick={toggleMuted}
+          aria-label={muted ? 'Activer le son' : 'Couper le son'}
+          aria-pressed={muted}
+          className="rounded border border-zinc-600/60 bg-black/60 p-1.5 text-zinc-300 hover:border-red-500/60 hover:text-red-300 focus-visible:border-red-500 focus-visible:outline-none"
+        >
+          {muted ? <VolumeX size={16} aria-hidden /> : <Volume2 size={16} aria-hidden />}
+        </button>
+      </div>
       <LoadingScreen progress={progress} done={!active && progress === 100} onFinished={onBootFinished} />
       {/* Required by the model's CC BY 4.0 licence */}
       <p
@@ -205,13 +268,11 @@ export default function Scene() {
       {isDev && (
         <DevToolbar
           view={view}
-          onViewChange={setView}
+          onViewChange={goTo}
           freeMode={freeMode}
           onFreeModeChange={setFreeMode}
           cardTheme={cardTheme}
           onCardThemeChange={setCardTheme}
-          lighting={lighting}
-          onLightingChange={setLighting}
           compact={compact}
         />
       )}

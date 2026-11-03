@@ -75,6 +75,8 @@ type CockpitProps = JSX.IntrinsicElements['group'] & {
   onPanelSelect: (id: SectionId) => void
   onPanelHover: (id: SectionId, hovered: boolean) => void
   onConsoleClick: () => void
+  onAlertClick: () => void
+  alertActive: boolean
 }
 
 // Brightness of the targeting computer's round screen, at rest and on hover
@@ -86,14 +88,31 @@ const SCREEN_GLOW_HOVER = 2.5
 const CONSOLE_HITBOX_POSITION: [number, number, number] = [0, -0.17, 0.52]
 const CONSOLE_HITBOX_SIZE: [number, number, number] = [0.34, 0.22, 0.14]
 
-export function Cockpit({ openPanel, onPanelSelect, onPanelHover, onConsoleClick, ...props }: CockpitProps) {
+// Left round button of the console: triggers the red alert. Its hitbox sticks out in front
+// of the console hitbox (front at z 0.45) so it is the one hit first.
+const ALERT_BUTTON_POSITION: [number, number, number] = [0.1, -0.2, 0.455]
+const ALERT_BUTTON_SIZE: [number, number, number] = [0.05, 0.05, 0.05]
+// Red ring around the button, shown on hover and during the alert
+const ALERT_RING_POSITION: [number, number, number] = [0.1, -0.201, 0.452]
+
+export function Cockpit({
+  openPanel,
+  onPanelSelect,
+  onPanelHover,
+  onConsoleClick,
+  onAlertClick,
+  alertActive,
+  ...props
+}: CockpitProps) {
   const { nodes, materials } = useGLTF(MODEL_URL) as GLTFResult
   // Interactive panels are cut out of the shared meshes so they can move on hover
   const plates = useMemo(() => splitPanels(nodes.triangles_triangles_0.geometry), [nodes])
   const lights = useMemo(() => splitPanels(nodes.triangles_lights_triangles_lights_0.geometry), [nodes])
 
   const [consoleHovered, setConsoleHovered] = useState(false)
-  useCursor(consoleHovered)
+  const [alertHovered, setAlertHovered] = useState(false)
+  // One shared cursor: separate useCursor calls would overwrite each other when moving between the two
+  useCursor(consoleHovered || alertHovered)
   useEffect(() => {
     // The screen material is only used by the round screen
     materials.screen.emissiveIntensity = consoleHovered ? SCREEN_GLOW_HOVER : SCREEN_GLOW
@@ -118,6 +137,25 @@ export function Cockpit({ openPanel, onPanelSelect, onPanelHover, onConsoleClick
         }}
       >
         <boxGeometry args={CONSOLE_HITBOX_SIZE} />
+      </mesh>
+      <mesh
+        position={ALERT_BUTTON_POSITION}
+        visible={false}
+        onPointerOver={(e: ThreeEvent<PointerEvent>) => {
+          e.stopPropagation()
+          setAlertHovered(true)
+        }}
+        onPointerOut={() => setAlertHovered(false)}
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation()
+          onAlertClick()
+        }}
+      >
+        <boxGeometry args={ALERT_BUTTON_SIZE} />
+      </mesh>
+      <mesh position={ALERT_RING_POSITION} visible={alertHovered || alertActive}>
+        <ringGeometry args={[0.02, 0.024, 32]} />
+        <meshBasicMaterial color="#ff3020" side={THREE.DoubleSide} toneMapped={false} />
       </mesh>
       <group rotation={[-Math.PI / 2, 0, 0]}>
         <group rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
