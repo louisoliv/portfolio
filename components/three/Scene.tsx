@@ -14,6 +14,7 @@ import { SECTION_CARDS } from './SectionCards'
 import { PanelLabel } from './PanelLabel'
 import { LoadingScreen } from './LoadingScreen'
 import { Starfield } from './Starfield'
+import { CockpitLights, LightingPreset } from './CockpitLights'
 import { MobileSheet } from './MobileSheet'
 import { MobileNav } from './MobileNav'
 import { useCompactLayout } from './useCompactLayout'
@@ -42,6 +43,7 @@ export default function Scene() {
   const [view, setView] = useState<ViewId>('overview')
   const [freeMode, setFreeMode] = useState(false)
   const [cardTheme, setCardTheme] = useState<CardTheme>('cockpit')
+  const [lighting, setLighting] = useState<LightingPreset>('dark')
   const [heroVisible, setHeroVisible] = useState(true)
   const [hoveredPanel, setHoveredPanel] = useState<SectionId | null>(null)
   // Phones and small windows: cards in a bottom sheet, section bar instead of reachable panels
@@ -108,8 +110,7 @@ export default function Scene() {
         }}
       >
         <color attach="background" args={['#000000']} />
-        <ambientLight intensity={0.6} />
-        <pointLight position={[0, 0.3, 0]} intensity={2} distance={4} />
+        <CockpitLights preset={lighting} />
         <Starfield compact={compact} />
         {/* Measured only after boot: loading the model is expected to be slow */}
         {booted && <PerformanceMonitor bounds={PERF_BOUNDS} onDecline={onPerfDecline} />}
@@ -209,6 +210,8 @@ export default function Scene() {
           onFreeModeChange={setFreeMode}
           cardTheme={cardTheme}
           onCardThemeChange={setCardTheme}
+          lighting={lighting}
+          onLightingChange={setLighting}
           compact={compact}
         />
       )}

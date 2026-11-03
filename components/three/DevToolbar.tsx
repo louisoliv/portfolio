@@ -2,6 +2,7 @@
 
 import { PANELS, ViewId } from './panels'
 import { CARD_THEMES, CardTheme } from './ImperialCard'
+import { LIGHTING_PRESETS, LightingPreset } from './CockpitLights'
 
 type DevToolbarProps = {
   view: ViewId
@@ -10,10 +11,12 @@ type DevToolbarProps = {
   onFreeModeChange: (freeMode: boolean) => void
   cardTheme: CardTheme
   onCardThemeChange: (theme: CardTheme) => void
+  lighting: LightingPreset
+  onLightingChange: (lighting: LightingPreset) => void
   compact: boolean
 }
 
-// Temporary dev controls: jump between viewpoints, toggle free camera, compare card themes
+// Temporary dev controls: jump between viewpoints, toggle free camera, compare card themes and lighting
 export function DevToolbar({
   view,
   onViewChange,
@@ -21,6 +24,8 @@ export function DevToolbar({
   onFreeModeChange,
   cardTheme,
   onCardThemeChange,
+  lighting,
+  onLightingChange,
   compact,
 }: DevToolbarProps) {
   const views: { id: ViewId; label: string }[] = [
@@ -54,6 +59,20 @@ export function DevToolbar({
           {(Object.keys(CARD_THEMES) as CardTheme[]).map((theme) => (
             <option key={theme} value={theme}>
               {CARD_THEMES[theme].label}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label className="ml-2 flex items-center gap-1">
+        Lumière
+        <select
+          value={lighting}
+          onChange={(e) => onLightingChange(e.target.value as LightingPreset)}
+          className="border border-cyan-300/30 bg-black px-1 py-0.5"
+        >
+          {(Object.keys(LIGHTING_PRESETS) as LightingPreset[]).map((preset) => (
+            <option key={preset} value={preset}>
+              {LIGHTING_PRESETS[preset].label}
             </option>
           ))}
         </select>
