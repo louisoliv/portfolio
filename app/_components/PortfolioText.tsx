@@ -1,17 +1,12 @@
 import {
-  HERO,
+  getPortfolio,
   TECH_TAGS,
-  STATS,
-  EXPERIENCES,
-  SIDE_PROJECTS,
-  WORKS,
-  SKILL_GROUPS,
   EMAIL,
   LINKEDIN,
   GITHUB,
-  CV,
   LOCATIONS,
 } from "../_data/portfolio";
+import type { Lang } from "../_data/i18n";
 
 // Invisible on screen, so kept out of the Tab order: sighted keyboard users would land on
 // links they cannot see. Screen readers still read and follow them.
@@ -24,9 +19,12 @@ const TextLink = ({ href, children }: { href: string; children: React.ReactNode 
 // Server-rendered text version of the portfolio for the cockpit page.
 // The 3D scene only exists in the browser: this keeps the content in the HTML
 // for search engines and screen readers, hidden on screen (sr-only).
-export const PortfolioText = () => {
+// Its language is fixed at render time: when the visitor switches language in the
+// cockpit, the scene hides it (see Scene) rather than leaving a stale version to read.
+export const PortfolioText = ({ lang }: { lang: Lang }) => {
+  const { t, HERO, STATS, EXPERIENCES, SIDE_PROJECTS, WORKS, SKILL_GROUPS, CV } = getPortfolio(lang);
   return (
-    <div className="sr-only">
+    <div id="portfolio-text" lang={lang} className="sr-only">
       <header>
         <p>{HERO.availability}</p>
         <h1>{`${HERO.firstName} ${HERO.lastName}`}</h1>
@@ -54,7 +52,7 @@ export const PortfolioText = () => {
       </header>
 
       <section aria-labelledby="text-experience">
-        <h2 id="text-experience">Expérience &amp; Formation</h2>
+        <h2 id="text-experience">{t.classic.experienceTitle}</h2>
         <ul>
           {EXPERIENCES.map((exp) => (
             <li key={exp.title}>
@@ -69,7 +67,7 @@ export const PortfolioText = () => {
       </section>
 
       <section aria-labelledby="text-projects">
-        <h2 id="text-projects">Projets</h2>
+        <h2 id="text-projects">{t.classic.projectsTitle}</h2>
         <ul>
           {SIDE_PROJECTS.map((project) => (
             <li key={project.title}>
@@ -81,7 +79,7 @@ export const PortfolioText = () => {
             </li>
           ))}
         </ul>
-        <h3>Formations</h3>
+        <h3>{t.classic.trainings}</h3>
         <ul>
           {WORKS.map((work) => (
             <li key={work.title}>
@@ -92,7 +90,7 @@ export const PortfolioText = () => {
       </section>
 
       <section aria-labelledby="text-skills">
-        <h2 id="text-skills">Compétences</h2>
+        <h2 id="text-skills">{t.cockpit.sections.skills}</h2>
         {SKILL_GROUPS.map((group) => (
           <div key={group.category}>
             <h3>{group.category}</h3>
@@ -106,7 +104,7 @@ export const PortfolioText = () => {
       </section>
 
       <section aria-labelledby="text-contact">
-        <h2 id="text-contact">Contact</h2>
+        <h2 id="text-contact">{t.classic.contactBadge}</h2>
         <p>{LOCATIONS}</p>
         <ul>
           <li>

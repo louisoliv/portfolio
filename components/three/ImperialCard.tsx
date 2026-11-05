@@ -1,4 +1,6 @@
 import { cn } from '@/lib/utils'
+import { getPortfolio } from '@/app/_data/portfolio'
+import type { Lang } from '@/app/_data/i18n'
 
 // Chamfered corners: top-left and bottom-right cut, Imperial terminal style
 const CHAMFER = 'polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%, 0 16px)'
@@ -22,6 +24,7 @@ type ImperialCardProps = {
   // Decorative sector code shown in the header, e.g. "SEC-01"
   code: string
   title: string
+  lang: Lang
   theme?: CardTheme
   // Hide the large title when the content brings its own main heading
   showHeading?: boolean
@@ -29,7 +32,8 @@ type ImperialCardProps = {
   className?: string
 }
 
-export function ImperialCard({ code, title, theme = 'cockpit', showHeading = true, children, className }: ImperialCardProps) {
+export function ImperialCard({ code, title, lang, theme = 'cockpit', showHeading = true, children, className }: ImperialCardProps) {
+  const { t } = getPortfolio(lang)
   const { vars } = CARD_THEMES[theme]
   const style = {
     clipPath: CHAMFER,
@@ -56,7 +60,7 @@ export function ImperialCard({ code, title, theme = 'cockpit', showHeading = tru
             <span aria-hidden className="size-1.5 bg-hud-accent motion-safe:animate-pulse" />
             {code} {'//'} <span className="text-hud-title">{title}</span>
           </span>
-          <span aria-hidden className="text-hud-muted/70">Accès autorisé</span>
+          <span aria-hidden className="text-hud-muted/70">{t.cockpit.accessGranted}</span>
         </header>
 
         <div className="relative px-5 py-4">
@@ -68,7 +72,7 @@ export function ImperialCard({ code, title, theme = 'cockpit', showHeading = tru
           aria-hidden
           className="flex items-center justify-between border-t border-hud-line/30 px-5 py-1.5 text-[9px] uppercase tracking-[0.25em] text-hud-line/60"
         >
-          <span>Réseau impérial · Terminal 7-4</span>
+          <span>{t.cockpit.network}</span>
           <span className="flex gap-0.5">
             <span className="h-2 w-1 bg-hud-accent/80" />
             <span className="h-2 w-1 bg-hud-accent/80" />

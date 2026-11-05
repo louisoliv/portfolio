@@ -1,5 +1,5 @@
-// Single source of truth for the portfolio content,
-// shared by the classic page and the 3D cockpit cards.
+// Portfolio data for each language, shared by the classic page and the 3D cockpit cards.
+// Texts are in content.fr.ts / content.en.ts; links, tags and icons, common to both, are here.
 
 import {
   Briefcase,
@@ -20,33 +20,28 @@ import { PythonIcon } from "../_components/icons/PythonLogo";
 import { FlaskIcon } from "../_components/icons/FlaskLogo";
 import { DartIcon } from "../_components/icons/DartLogo";
 import { FlutterIcon } from "../_components/icons/FlutterLogo";
+import { fr, type Content } from "./content.fr";
+import { en } from "./content.en";
+import type { Lang } from "./i18n";
 import { GITHUB, LINKEDIN } from "./profiles";
+
+// ─── Common to both languages ────────────────────────────────────────────
 
 // GitHub and LinkedIn profiles live in profiles.ts (see there why)
 export { GITHUB, LINKEDIN };
 
-// ─── Hero ────────────────────────────────────────────────────────────────
+export const CONTACT_PHOTO = "/_next/static/media/Fond-blanc2.1203aefd.jpg";
 
-export const HERO = {
-  availability: "En alternance · ROAV7",
-  firstName: "Louis",
-  lastName: "OLIVIER",
-  role: "Concepteur d'application · Développeur Full Stack",
-  // The intro sentence is split around its two inline links
-  intro: {
-    beforeSchool:
-      "Développeur full stack passionné par la création d'interfaces modernes et d'APIs robustes. En formation à",
-    school: {
-      label: "Zone01",
-      url: "https://zone01rouennormandie.org/",
-      logo: "https://zone01rouennormandie.org/wp-content/uploads/2024/02/ZONE01-ROUEN-NORMANDIE-HORIZON-FOND-NOIR-BONNE-TAILLE.png",
-    },
-    afterSchool:
-      "Rouen et en alternance, je construis des projets concrets du frontend au backend - et je publie sur",
-    github: { label: "GitHub", url: GITHUB.url },
-    end: ".",
-  },
+export const EMAIL = {
+  address: "louisolivier7603@gmail.com",
+  url: "mailto:louisolivier7603@gmail.com",
+  icon: "https://banner2.cleanpng.com/20240403/ras/transparent-gmail-icon-google-mail-logo-with-vibrant-colors-and-m660d4ec2bd9db0.46699070.webp",
 };
+
+// The PDF goes in public/, it is served at this path
+const CV_URL = "/cv-louis-olivier.pdf";
+
+export const LOCATIONS = "Rouen · Le Havre";
 
 export const TECH_TAGS = [
   "React · Next.js",
@@ -59,54 +54,59 @@ export const TECH_TAGS = [
   "Electron",
 ];
 
-export const STATS = [
-  { value: "50+", label: "Projets" },
-  { value: "3", label: "Ans de code" },
-  { value: "10+", label: "Techs" },
+const SCHOOL = {
+  label: "Zone01",
+  url: "https://zone01rouennormandie.org/",
+  logo: "https://zone01rouennormandie.org/wp-content/uploads/2024/02/ZONE01-ROUEN-NORMANDIE-HORIZON-FOND-NOIR-BONNE-TAILLE.png",
+};
+
+// ─── Per language ────────────────────────────────────────────────────────
+
+const buildHero = (t: Content) => ({
+  availability: t.hero.availability,
+  firstName: "Louis",
+  lastName: "OLIVIER",
+  role: t.hero.role,
+  // The intro sentence is split around its two inline links
+  intro: {
+    beforeSchool: t.hero.introBeforeSchool,
+    school: SCHOOL,
+    afterSchool: t.hero.introAfterSchool,
+    github: { label: "GitHub", url: GITHUB.url },
+    end: ".",
+  },
+});
+
+const buildStats = (t: Content) => [
+  { value: "50+", label: t.stats.projects },
+  { value: "3", label: t.stats.years },
+  { value: "10+", label: t.stats.techs },
 ];
 
-// ─── Expérience ──────────────────────────────────────────────────────────
-
-export const EXPERIENCES: ExperienceItemProps[] = [
+const buildExperiences = (t: Content): ExperienceItemProps[] => [
   {
-    title: "Développeur R&D",
-    company: "Entreprise ROAV7 · Alternance",
+    ...t.experiences.roav7,
     companyUrl: "https://www.roav7.com/",
     date: "2026 - 2028",
-    description:
-      "Développement d'un logiciel pour les données collectées par drone. Travail en autonomie, encadré par ma tutrice, responsable du pôle R&D. Stack Node.js, Electron, React, TypeScript, Tailwind et SQLite3.",
-    badge: "Alternance",
     badgeVariant: "alternance",
   },
   {
-    title: "Développeur Full Stack",
-    company: "Entreprise Arès (franchisé McDonald's) · Alternance terminée",
+    ...t.experiences.ares,
     date: "2025 - 2026",
-    description:
-      "Développement d'une application métier (ERP McDonald's) en environnement professionnel. Travail solitaire puis en équipe (sur 2 mois), gestion de versions Git, déploiement continu. Stack Python, Flask, SQLAlchemy, React, TypeScript, Tailwind, Docker et PostgreSQL.",
-    badge: "Alternance",
     badgeVariant: "alternance",
   },
   {
-    title: "Étudiant développeur",
-    company: "Zone01 · Rouen, Normandie",
+    ...t.experiences.zone01,
     companyUrl: "https://zone01rouennormandie.org/",
     date: "2023 - 2028",
-    description:
-      "École de code par la pratique - projets collaboratifs en Go, JavaScript et Rust. Pédagogie basée sur des projets réels et du pair-programming. Développement de l'autonomie et de la rigueur technique.",
-    badge: "Formation",
     badgeVariant: "formation",
   },
 ];
 
-// ─── Projets ─────────────────────────────────────────────────────────────
-
-export const SIDE_PROJECTS: SideProjectProps[] = [
+const buildSideProjects = (t: Content): SideProjectProps[] => [
   {
+    ...t.projects.erp,
     Logo: Briefcase,
-    title: "ERP McDonald's",
-    description:
-      "Création d'un ERP complet pour un franchisé McDonald's - gestion des stocks, commandes et employés.",
     url: "https://github.com/louisoliv/",
     tags: [
       "Python",
@@ -118,66 +118,56 @@ export const SIDE_PROJECTS: SideProjectProps[] = [
       "PostgreSQL",
     ],
     featured: true,
+    featuredBadge: t.projects.featuredBadge,
   },
   {
+    ...t.projects.game2048,
     Logo: Rocket,
-    title: "Application : 2048",
-    description:
-      "Développement d'une application mobile en Dart - Flutter du jeu 2048",
     url: "https://github.com/louisoliv/",
     tags: ["Dart", "Flutter"],
   },
   {
+    ...t.projects.socialNetwork,
     Logo: BarChart3,
-    title: "Social Network",
-    description:
-      "Un réseau social s'inspirant d'Instagram, Facebook et Discord",
     url: "https://github.com/louisoliv/",
     tags: ["Go", "Next.js", "JavaScript", "Docker", "SQLite3"],
   },
   {
+    ...t.projects.forum,
     Logo: ImageUp,
-    title: "Forum Image Upload",
-    description:
-      "Forum / blog complet avec posts, commentaires, likes et upload d'images.",
     url: "https://github.com/louisoliv/Forum-Image-Upload",
     tags: ["Go", "HTML", "CSS"],
   },
   {
+    ...t.projects.makeYourGame,
     Logo: Joystick,
-    title: "Make Your Game",
-    description: "Space Invaders entier en JavaScript vanilla, HTML et CSS.",
     url: "https://github.com/louisoliv/Make-Your-Game-History",
     tags: ["JS", "HTML", "CSS"],
   },
   {
+    ...t.projects.graphql,
     Logo: ChartLine,
-    title: "GraphQL",
-    description:
-      "Recréation du site de l'école avec fetches multiples et requêtes GraphQL.",
     url: "https://github.com/louisoliv/louisoliv.github.io",
     tags: ["GraphQL", "JS"],
   },
 ];
 
-export const WORKS: WorkProps[] = [
+const buildWorks = (t: Content): WorkProps[] => [
   {
     image: "/hangman.png",
-    title: "Hanged game",
-    role: "Training",
+    title: t.works.hangman,
+    role: t.works.role,
     date: "2024",
     url: "https://github.com/louisoliv/A-hanged-man",
   },
   {
     image: "/milkyway.png",
-    title: "Quiz App",
-    role: "Training",
+    title: t.works.quiz,
+    role: t.works.role,
     date: "2024-2025",
     url: "https://github.com/louisoliv/Stars-Wars-Quiz-App",
   },
 ];
-
-// ─── Compétences ─────────────────────────────────────────────────────────
 
 // type SkillLevel = "Solide" | "Maîtrisé" | "En cours";
 
@@ -192,9 +182,9 @@ export type SkillGroup = {
   skills: SkillItem[];
 };
 
-export const SKILL_GROUPS: SkillGroup[] = [
+const buildSkillGroups = (t: Content): SkillGroup[] => [
   {
-    category: "Frontend",
+    category: t.skills.frontend,
     skills: [
       {
         icon: (
@@ -241,7 +231,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
     ],
   },
   {
-    category: "Backend & Infra",
+    category: t.skills.backend,
     skills: [
       {
         icon: <GoLangIcon size={22} />,
@@ -306,7 +296,7 @@ export const SKILL_GROUPS: SkillGroup[] = [
     ],
   },
   {
-    category: "Mobile, Desktop & Outils",
+    category: t.skills.tools,
     skills: [
       {
         icon: <DartIcon size={22} />,
@@ -363,29 +353,24 @@ export const SKILL_GROUPS: SkillGroup[] = [
             IA
           </span>
         ),
-        name: "IA · Claude, Copilot, Gemini",
+        name: t.skills.ai,
       },
     ],
   },
 ];
 
-// ─── Contact ─────────────────────────────────────────────────────────────
-// Labels differ between the contact section and the quick-contact card,
-// so only the shared values live here.
+const buildPortfolio = (t: Content) => ({
+  // All the texts, for what is not structured data (titles, buttons…)
+  t,
+  HERO: buildHero(t),
+  STATS: buildStats(t),
+  EXPERIENCES: buildExperiences(t),
+  SIDE_PROJECTS: buildSideProjects(t),
+  WORKS: buildWorks(t),
+  SKILL_GROUPS: buildSkillGroups(t),
+  CV: { label: "CV", description: t.contact.cvDescription, url: CV_URL },
+});
 
-export const CONTACT_PHOTO = "/_next/static/media/Fond-blanc2.1203aefd.jpg";
+const PORTFOLIOS = { fr: buildPortfolio(fr), en: buildPortfolio(en) };
 
-export const EMAIL = {
-  address: "louisolivier7603@gmail.com",
-  url: "mailto:louisolivier7603@gmail.com",
-  icon: "https://banner2.cleanpng.com/20240403/ras/transparent-gmail-icon-google-mail-logo-with-vibrant-colors-and-m660d4ec2bd9db0.46699070.webp",
-};
-
-// The PDF goes in public/, it is served at this path
-export const CV = {
-  label: "CV",
-  description: "Télécharger mon CV (PDF)",
-  url: "/cv-louis-olivier.pdf",
-};
-
-export const LOCATIONS = "Rouen · Le Havre";
+export const getPortfolio = (lang: Lang) => PORTFOLIOS[lang];

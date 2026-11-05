@@ -1,16 +1,7 @@
 import Image from 'next/image'
 import { ArrowUpRight, FileText, MapPin } from 'lucide-react'
-import {
-  EXPERIENCES,
-  SIDE_PROJECTS,
-  WORKS,
-  SKILL_GROUPS,
-  EMAIL,
-  LINKEDIN,
-  GITHUB,
-  CV,
-  LOCATIONS,
-} from '@/app/_data/portfolio'
+import { getPortfolio, EMAIL, LINKEDIN, GITHUB, LOCATIONS } from '@/app/_data/portfolio'
+import type { Lang } from '@/app/_data/i18n'
 import { GithubIcon } from '@/app/_components/icons/GithubIcon'
 import { cn } from '@/lib/utils'
 import { SectionId } from './panels'
@@ -43,7 +34,10 @@ function SubTitle({ children }: { children: React.ReactNode }) {
 const SCROLL_AREA =
   'max-h-[380px] overflow-y-auto pr-2 [scrollbar-color:rgb(var(--hud-line)/0.5)_transparent] [scrollbar-width:thin]'
 
-function ExperienceCard() {
+type CardContentProps = { lang: Lang }
+
+function ExperienceCard({ lang }: CardContentProps) {
+  const { EXPERIENCES } = getPortfolio(lang)
   return (
     <ol className="space-y-4">
       {EXPERIENCES.map((exp) => (
@@ -69,10 +63,11 @@ function ExperienceCard() {
   )
 }
 
-function ProjectsCard() {
+function ProjectsCard({ lang }: CardContentProps) {
+  const { t, SIDE_PROJECTS, WORKS } = getPortfolio(lang)
   return (
     <div className={SCROLL_AREA}>
-      <SubTitle>Tous les projets</SubTitle>
+      <SubTitle>{t.classic.allProjects}</SubTitle>
       <ul className="space-y-2">
         {SIDE_PROJECTS.map((project) => (
           <li key={project.title}>
@@ -87,7 +82,7 @@ function ProjectsCard() {
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-semibold text-hud-title">{project.title}</h3>
-                  {project.featured && <Tag>Alternance</Tag>}
+                  {project.featured && <Tag>{project.featuredBadge}</Tag>}
                   <ArrowUpRight size={12} className="ml-auto shrink-0 text-hud-line/60 group-hover:text-hud-accent" />
                 </div>
                 <p className="mt-0.5 text-xs leading-relaxed text-hud-fg/70">{project.description}</p>
@@ -105,7 +100,7 @@ function ProjectsCard() {
       </ul>
 
       <div className="mt-4">
-        <SubTitle>Formations</SubTitle>
+        <SubTitle>{t.classic.trainings}</SubTitle>
         <ul className="space-y-1">
           {WORKS.map((work) => (
             <li key={work.title}>
@@ -128,7 +123,8 @@ function ProjectsCard() {
   )
 }
 
-function SkillsCard() {
+function SkillsCard({ lang }: CardContentProps) {
+  const { SKILL_GROUPS } = getPortfolio(lang)
   return (
     <div className="space-y-4">
       {SKILL_GROUPS.map((group) => (
@@ -151,7 +147,8 @@ function SkillsCard() {
   )
 }
 
-function ContactCard() {
+function ContactCard({ lang }: CardContentProps) {
+  const { t, CV } = getPortfolio(lang)
   const logo = (src: string, alt: string) => (
     <Image src={src} alt={alt} width={20} height={20} className="object-contain" />
   )
@@ -163,7 +160,7 @@ function ContactCard() {
   ]
   return (
     <div>
-      <p className="text-xs text-hud-fg/70">Un projet, une opportunité ? N&apos;hésite pas.</p>
+      <p className="text-xs text-hud-fg/70">{t.contact.pitch}</p>
       <p className="mb-3 mt-1 flex items-center gap-1.5 text-xs text-hud-muted">
         <MapPin size={12} aria-hidden className="text-hud-accent" />
         {LOCATIONS}
@@ -189,7 +186,7 @@ function ContactCard() {
   )
 }
 
-export const SECTION_CARDS: Record<SectionId, { code: string; Content: () => JSX.Element }> = {
+export const SECTION_CARDS: Record<SectionId, { code: string; Content: (props: CardContentProps) => JSX.Element }> = {
   experience: { code: 'SEC-01', Content: ExperienceCard },
   projects: { code: 'SEC-02', Content: ProjectsCard },
   skills: { code: 'SEC-03', Content: SkillsCard },

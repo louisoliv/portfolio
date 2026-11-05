@@ -13,7 +13,7 @@ import { PanelCard } from './PanelCard'
 import { ImperialCard, CardTheme } from './ImperialCard'
 import { SECTION_CARDS } from './SectionCards'
 import { PanelLabel } from './PanelLabel'
-import { LoadingScreen } from './LoadingScreen'
+import { BootTexts, LoadingScreen } from './LoadingScreen'
 import { Starfield } from './Starfield'
 import { CockpitLights } from './CockpitLights'
 import { playSound, readStoredSoundMuted, setSoundMuted } from './sounds'
@@ -21,6 +21,8 @@ import { MobileSheet } from './MobileSheet'
 import { MobileNav } from './MobileNav'
 import { useCompactLayout } from './useCompactLayout'
 import { OVERVIEW_VIEW, PANELS, SectionId, ViewId } from './panels'
+import { getPortfolio } from '@/app/_data/portfolio'
+import { classicPath, cockpitPath, LANGS, type Lang } from '@/app/_data/i18n'
 
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -43,7 +45,27 @@ const computePointer: ComputeFunction = (event, state) => {
   state.raycaster.setFromCamera(state.pointer, state.camera)
 }
 
-export default function Scene() {
+type SceneProps = {
+  initialLang: Lang
+  boot: BootTexts
+}
+
+export default function Scene({ initialLang, boot }: SceneProps) {
+  // Switching language keeps the scene mounted: the URL, <html lang> and page title follow
+  // without any navigation, and the matching page exists on the server for direct visits
+  const [lang, setLang] = useState(initialLang)
+  const { t } = getPortfolio(lang)
+  const switchLanguage = (next: Lang) => {
+    if (next === lang) return
+    setLang(next)
+    window.history.replaceState(null, '', cockpitPath(next))
+    document.documentElement.lang = next
+    document.title = getPortfolio(next).t.meta.title
+    // The server-rendered text version only exists in the language the page was loaded in
+    const textVersion = document.getElementById('portfolio-text')
+    if (textVersion) textVersion.hidden = textVersion.lang !== next
+  }
+
   const [view, setView] = useState<ViewId>('overview')
   // Every camera move goes through here, so that each one has its sound
   const goTo = useCallback(
@@ -163,16 +185,18 @@ export default function Scene() {
             onAlertClick={onAlertClick}
             alertActive={alertActive}
           />
-          <HeroCard visible={booted && !compact && view === 'overview' && heroVisible} theme={cardTheme} onNavigate={goTo} />
+          <HeroCard visible={booted && !compact && view === 'overview' && heroVisible} lang={lang} theme={cardTheme} onNavigate={goTo} />
           {booted && PANELS.map((panel) => {
             const { code, Content } = SECTION_CARDS[panel.id]
             return (
               <Fragment key={panel.id}>
                 {/* The open panel's card already shows its name */}
-                {view !== panel.id && <PanelLabel panel={panel} code={code} highlighted={hoveredPanel === panel.id} />}
+                {view !== panel.id && (
+                  <PanelLabel panel={panel} code={code} label={t.cockpit.sections[panel.id]} highlighted={hoveredPanel === panel.id} />
+                )}
                 <PanelCard panel={panel} visible={!compact && view === panel.id}>
-                  <ImperialCard code={code} title={panel.label} theme={cardTheme}>
-                    <Content />
+                  <ImperialCard code={code} title={t.cockpit.sections[panel.id]} lang={lang} theme={cardTheme}>
+                    <Content lang={lang} />
                   </ImperialCard>
                 </PanelCard>
               </Fragment>
@@ -187,47 +211,55 @@ export default function Scene() {
           onClick={() => goTo('overview')}
           className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded border border-red-500/60 bg-black/70 px-4 py-2 font-mono text-sm text-red-400 hover:border-red-400 hover:text-red-300"
         >
-          ← Vue d&apos;ensemble
+          {t.cockpit.backToOverview}
         </button>
       )}
       {compact && booted && view === 'overview' && heroVisible && (
         <MobileSheet
-          label="Profil pilote"
+          label={t.cockpit.profileCardTitle}
+          closeLabel={t.cockpit.close}
           onClose={() => {
             playSound('heroHide')
             setHeroVisible(false)
           }}
         >
-          <HeroCardContent theme={cardTheme} onNavigate={goTo} />
+          <HeroCardContent lang={lang} theme={cardTheme} onNavigate={goTo} />
         </MobileSheet>
       )}
       {compact && booted && openPanel && OpenContent && (
-        <MobileSheet label={openPanel.label} onClose={() => goTo('overview')}>
-          <ImperialCard code={SECTION_CARDS[openPanel.id].code} title={openPanel.label} theme={cardTheme}>
-            <OpenContent />
+        <MobileSheet label={t.cockpit.sections[openPanel.id]} closeLabel={t.cockpit.close} onClose={() => goTo('overview')}>
+          <ImperialCard code={SECTION_CARDS[openPanel.id].code} title={t.cockpit.sections[openPanel.id]} lang={lang} theme={cardTheme}>
+            <OpenContent lang={lang} />
           </ImperialCard>
         </MobileSheet>
       )}
-      {compact && booted && <MobileNav view={view} onSelect={onNavSelect} />}
+      {compact && booted && (
+        <MobileNav
+          view={view}
+          labels={{ overview: t.cockpit.profile, ...t.cockpit.sections }}
+          navLabel={t.cockpit.sectionsNav}
+          onSelect={onNavSelect}
+        />
+      )}
       {showSlowBanner && (
         <div
           role="status"
           className="absolute left-1/2 top-16 flex w-[min(36rem,calc(100%-2rem))] -translate-x-1/2 flex-wrap items-center justify-center gap-x-4 gap-y-2 rounded border border-red-500/60 bg-black/85 px-4 py-3 text-center font-mono text-xs text-zinc-200"
         >
-          <span>Ton appareil semble avoir du mal à afficher le cockpit.</span>
+          <span>{t.cockpit.slowDevice}</span>
           <span className="flex gap-2">
             <Link
-              href="/classique"
+              href={classicPath(lang)}
               className="rounded border border-red-500/70 px-3 py-1 uppercase tracking-widest text-red-300 hover:bg-red-500/20"
             >
-              Version classique
+              {t.cockpit.classicVersion}
             </Link>
             <button
               type="button"
               onClick={() => setSlowBannerDismissed(true)}
               className="rounded border border-zinc-600 px-3 py-1 uppercase tracking-widest text-zinc-300 hover:border-zinc-400"
             >
-              Rester ici
+              {t.cockpit.stayHere}
             </button>
           </span>
         </div>
@@ -235,22 +267,45 @@ export default function Scene() {
       <div className="absolute left-3 top-3 flex items-center gap-2">
         {/* Text version for hurried visitors, keyboard and screen reader users */}
         <Link
-          href="/classique"
+          href={classicPath(lang)}
           className="rounded border border-zinc-600/60 bg-black/60 px-3 py-1.5 font-mono text-xs uppercase tracking-widest text-zinc-300 hover:border-red-500/60 hover:text-red-300 focus-visible:border-red-500 focus-visible:outline-none"
         >
-          Version classique
+          {t.cockpit.classicVersion}
         </Link>
         <button
           type="button"
           onClick={toggleMuted}
-          aria-label={muted ? 'Activer le son' : 'Couper le son'}
+          aria-label={muted ? t.cockpit.muteOn : t.cockpit.muteOff}
           aria-pressed={muted}
           className="rounded border border-zinc-600/60 bg-black/60 p-1.5 text-zinc-300 hover:border-red-500/60 hover:text-red-300 focus-visible:border-red-500 focus-visible:outline-none"
         >
           {muted ? <VolumeX size={16} aria-hidden /> : <Volume2 size={16} aria-hidden />}
         </button>
+        {/* Real links: the other language's page also exists at this address */}
+        <div
+          role="group"
+          aria-label={t.cockpit.switchLanguage}
+          className="flex rounded border border-zinc-600/60 bg-black/60 font-mono text-xs uppercase"
+        >
+          {LANGS.map((code) => (
+            <a
+              key={code}
+              href={cockpitPath(code)}
+              hrefLang={code}
+              lang={code}
+              aria-current={code === lang ? 'true' : undefined}
+              onClick={(e) => {
+                e.preventDefault()
+                switchLanguage(code)
+              }}
+              className={`px-2 py-1.5 ${code === lang ? 'bg-red-500/20 text-red-300' : 'text-zinc-400 hover:text-red-300'}`}
+            >
+              {code}
+            </a>
+          ))}
+        </div>
       </div>
-      <LoadingScreen progress={progress} done={!active && progress === 100} onFinished={onBootFinished} />
+      <LoadingScreen progress={progress} texts={boot} done={!active && progress === 100} onFinished={onBootFinished} />
       {/* Required by the model's CC BY 4.0 licence */}
       <p
         className={`absolute right-3 font-mono text-[10px] text-zinc-500 ${compact ? 'bottom-16 left-3 text-right' : 'bottom-2'}`}
@@ -271,6 +326,7 @@ export default function Scene() {
           onViewChange={goTo}
           freeMode={freeMode}
           onFreeModeChange={setFreeMode}
+          sectionLabels={t.cockpit.sections}
           cardTheme={cardTheme}
           onCardThemeChange={setCardTheme}
           compact={compact}

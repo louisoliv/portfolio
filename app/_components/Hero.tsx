@@ -4,9 +4,11 @@ import { Code } from "./Code";
 import Link from "next/link";
 import Image from "next/image";
 import imageLouis from "../Fond-blanc2.jpg";
-import { HERO, TECH_TAGS, STATS } from "../_data/portfolio";
+import { getPortfolio, TECH_TAGS } from "../_data/portfolio";
+import type { Lang } from "../_data/i18n";
 
-export const Hero = () => {
+export const Hero = ({ lang }: { lang: Lang }) => {
+  const { t, HERO, STATS } = getPortfolio(lang);
   return (
     <Section className="flex max-lg:flex-col items-center gap-12 py-8">
       {/* Left texte */}
@@ -73,13 +75,13 @@ export const Hero = () => {
             href="#projects"
             className="px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
           >
-            Voir mes projets
+            {t.hero.viewProjects}
           </Link>
           <Link
             href="#contact"
             className="px-5 py-2.5 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:border-primary/50 hover:text-foreground transition-colors"
           >
-            Me contacter
+            {t.hero.contactMe}
           </Link>
         </div>
       </div>
@@ -91,7 +93,7 @@ export const Hero = () => {
           width={400}
           height={400}
           className="w-full h-auto max-w-[260px] max-md:w-48 rounded-2xl object-cover ring-1 ring-border"
-          alt="Photo de Louis"
+          alt={t.hero.photoAlt}
         />
 
         {/* Mini stat cards */}

@@ -2,7 +2,8 @@
 
 import Image from 'next/image'
 import { Html } from '@react-three/drei'
-import { HERO, TECH_TAGS, STATS } from '@/app/_data/portfolio'
+import { getPortfolio, TECH_TAGS } from '@/app/_data/portfolio'
+import type { Lang } from '@/app/_data/i18n'
 import { GithubIcon } from '@/app/_components/icons/GithubIcon'
 import { ImperialCard, CardTheme } from './ImperialCard'
 import { ExternalLink, Tag } from './SectionCards'
@@ -27,14 +28,16 @@ const BUTTON =
   'border border-hud-line/40 px-3 py-1.5 text-xs uppercase tracking-widest text-hud-fg outline-none transition-colors hover:border-hud-line hover:bg-hud-line/20 hover:text-hud-title focus-visible:border-hud-line focus-visible:bg-hud-line/20 focus-visible:text-hud-title'
 
 type HeroCardContentProps = {
+  lang: Lang
   theme: CardTheme
   onNavigate: (id: SectionId) => void
 }
 
 // The profile card itself, shown in the window (HeroCard) or in the mobile bottom sheet
-export function HeroCardContent({ theme, onNavigate }: HeroCardContentProps) {
+export function HeroCardContent({ lang, theme, onNavigate }: HeroCardContentProps) {
+  const { t, HERO, STATS } = getPortfolio(lang)
   return (
-    <ImperialCard code="SEC-00" title="Profil pilote" theme={theme} showHeading={false}>
+    <ImperialCard code="SEC-00" title={t.cockpit.profileCardTitle} lang={lang} theme={theme} showHeading={false}>
       <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-hud-muted">
         <span aria-hidden className="size-1.5 rounded-full bg-emerald-400 motion-safe:animate-pulse" />
         {HERO.availability}
@@ -86,10 +89,10 @@ export function HeroCardContent({ theme, onNavigate }: HeroCardContentProps) {
 
       <div className="mt-4 flex gap-2">
         <button type="button" onClick={() => onNavigate('projects')} className={BUTTON}>
-          Voir mes projets
+          {t.hero.viewProjects}
         </button>
         <button type="button" onClick={() => onNavigate('contact')} className={BUTTON}>
-          Me contacter
+          {t.hero.contactMe}
         </button>
       </div>
     </ImperialCard>
@@ -98,11 +101,12 @@ export function HeroCardContent({ theme, onNavigate }: HeroCardContentProps) {
 
 type HeroCardProps = {
   visible: boolean
+  lang: Lang
   theme: CardTheme
   onNavigate: (id: SectionId) => void
 }
 
-export function HeroCard({ visible, theme, onNavigate }: HeroCardProps) {
+export function HeroCard({ visible, lang, theme, onNavigate }: HeroCardProps) {
   if (!visible) return null
 
   return (
@@ -113,7 +117,7 @@ export function HeroCard({ visible, theme, onNavigate }: HeroCardProps) {
           style={{ width: CARD_WIDTH_PX }}
           className="duration-500 animate-in fade-in zoom-in-95 fill-mode-backwards delay-300 motion-reduce:animate-none"
         >
-          <HeroCardContent theme={theme} onNavigate={onNavigate} />
+          <HeroCardContent lang={lang} theme={theme} onNavigate={onNavigate} />
         </div>
       </Html>
     </group>

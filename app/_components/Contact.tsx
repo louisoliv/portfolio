@@ -4,23 +4,25 @@ import { ContactCard } from "./ContactCard";
 import { FileText, MapPin } from "lucide-react";
 import { GithubIcon } from "./icons/GithubIcon";
 import {
+  getPortfolio,
   EMAIL,
   LINKEDIN,
   GITHUB,
-  CV,
   LOCATIONS,
   CONTACT_PHOTO,
 } from "../_data/portfolio";
+import type { Lang } from "../_data/i18n";
 
-export const Contact = () => {
+export const Contact = ({ lang }: { lang: Lang }) => {
+  const { t, CV } = getPortfolio(lang);
   return (
     <Section className="flex flex-col items-start gap-4" id="contact">
-      <Badge variant="outline">Contact</Badge>
+      <Badge variant="outline">{t.classic.contactBadge}</Badge>
       <h2 className="pb-2 text-3xl font-semibold tracking-tight">
-        Me contacter
+        {t.classic.contactTitle}
       </h2>
       <p className="text-sm text-muted-foreground -mt-2">
-        Un projet, une opportunité ? N&apos;hésite pas.
+        {t.contact.pitch}
       </p>
       <p className="text-sm text-muted-foreground -mt-2 flex items-center gap-1.5">
         <MapPin size={14} aria-hidden className="text-primary" />

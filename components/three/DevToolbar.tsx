@@ -1,6 +1,6 @@
 'use client'
 
-import { PANELS, ViewId } from './panels'
+import { PANELS, SectionId, ViewId } from './panels'
 import { CARD_THEMES, CardTheme } from './ImperialCard'
 
 type DevToolbarProps = {
@@ -8,6 +8,7 @@ type DevToolbarProps = {
   onViewChange: (view: ViewId) => void
   freeMode: boolean
   onFreeModeChange: (freeMode: boolean) => void
+  sectionLabels: Record<SectionId, string>
   cardTheme: CardTheme
   onCardThemeChange: (theme: CardTheme) => void
   compact: boolean
@@ -19,13 +20,14 @@ export function DevToolbar({
   onViewChange,
   freeMode,
   onFreeModeChange,
+  sectionLabels,
   cardTheme,
   onCardThemeChange,
   compact,
 }: DevToolbarProps) {
   const views: { id: ViewId; label: string }[] = [
     { id: 'overview', label: "Vue d'ensemble" },
-    ...PANELS.map(({ id, label }) => ({ id, label })),
+    ...PANELS.map(({ id }) => ({ id, label: sectionLabels[id] })),
   ]
 
   const controls = (

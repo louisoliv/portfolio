@@ -8,6 +8,7 @@ export type SideProjectProps = {
   url: string;
   tags?: string[];
   featured?: boolean;
+  featuredBadge?: string;
 };
 
 export const SideProject = (props: SideProjectProps) => {
@@ -26,7 +27,7 @@ export const SideProject = (props: SideProjectProps) => {
           <p className="text-sm font-semibold">{props.title}</p>
           {props.featured && (
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-              Alternance
+              {props.featuredBadge}
             </span>
           )}
         </div>

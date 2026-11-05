@@ -7,13 +7,14 @@ const SWIPE_CLOSE_DISTANCE = 60
 
 type MobileSheetProps = {
   label: string
+  closeLabel: string
   onClose: () => void
   children: React.ReactNode
 }
 
 // Compact layout: the info card slides up from the bottom, above the section bar,
 // instead of hanging next to its panel in the scene
-export function MobileSheet({ label, onClose, children }: MobileSheetProps) {
+export function MobileSheet({ label, closeLabel, onClose, children }: MobileSheetProps) {
   const swipeStart = useRef<number | null>(null)
 
   return (
@@ -24,7 +25,7 @@ export function MobileSheet({ label, onClose, children }: MobileSheetProps) {
       {/* The whole strip is the close button: the visible bar alone is too thin to aim at */}
       <button
         type="button"
-        aria-label="Fermer"
+        aria-label={closeLabel}
         onClick={onClose}
         className="group flex h-7 w-full shrink-0 touch-none items-center justify-center"
         onTouchStart={(e) => (swipeStart.current = e.touches[0].clientY)}

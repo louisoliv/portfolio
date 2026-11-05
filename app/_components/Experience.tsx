@@ -1,7 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Section } from "./Section";
 import Link from "next/link";
-import { EXPERIENCES } from "../_data/portfolio";
+import { getPortfolio } from "../_data/portfolio";
+import type { Lang } from "../_data/i18n";
 
 export type ExperienceItemProps = {
   title: string;
@@ -13,12 +14,13 @@ export type ExperienceItemProps = {
   badgeVariant: "alternance" | "formation";
 };
 
-export const Experience = () => {
+export const Experience = ({ lang }: { lang: Lang }) => {
+  const { t, EXPERIENCES } = getPortfolio(lang);
   return (
     <Section className="flex flex-col items-start gap-4" id="experience">
-      <Badge variant="outline">Parcours</Badge>
+      <Badge variant="outline">{t.classic.experienceBadge}</Badge>
       <h2 className="pb-2 text-3xl font-semibold tracking-tight">
-        Expérience &amp; Formation
+        {t.classic.experienceTitle}
       </h2>
 
       <div className="flex flex-col w-full divide-y divide-border">

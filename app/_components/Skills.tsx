@@ -1,7 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Section } from "./Section";
 import { Code } from "./Code";
-import { SKILL_GROUPS } from "../_data/portfolio";
+import { getPortfolio } from "../_data/portfolio";
+import type { Lang } from "../_data/i18n";
 
 // type SkillLevel = "Solide" | "Maîtrisé" | "En cours";
 
@@ -11,15 +12,16 @@ import { SKILL_GROUPS } from "../_data/portfolio";
 //   "En cours": "text-amber-400  font-mono text-[10px] font-bold",
 // };
 
-export const Skills = () => {
+export const Skills = ({ lang }: { lang: Lang }) => {
+  const { t, SKILL_GROUPS } = getPortfolio(lang);
   return (
     <Section className="flex flex-col items-start gap-4" id="skills">
-      <Badge variant="outline">Skills</Badge>
+      <Badge variant="outline">{t.classic.skillsBadge}</Badge>
       <h2 className="pb-2 text-3xl font-semibold tracking-tight">
-        Stack technique
+        {t.classic.skillsTitle}
       </h2>
       <p className="text-sm text-muted-foreground -mt-2 mb-2">
-        Les outils avec lesquels je travaille au quotidien
+        {t.classic.skillsSubtitle}
       </p>
 
       {/* Grille 3 colonnes */}
@@ -51,30 +53,16 @@ export const Skills = () => {
 
       {/* Descriptions détaillées */}
       <div className="flex max-md:flex-col gap-4 w-full mt-4">
-        <div className="flex flex-col gap-2 flex-1">
-          <h3 className="text-base font-semibold">Web frontend</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Bases solides du web. J&apos;utilise <Code>Tailwind CSS</Code> et{" "}
-            <Code>TypeScript</Code> au quotidien avec <Code>React</Code> et{" "}
-            <Code>Next.js</Code>.
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 flex-1">
-          <h3 className="text-base font-semibold">Backend</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            API REST avec <Code>Go</Code> et <Code>Python · Flask</Code>.
-            Conteneurisation <Code>Docker</Code>, bases de données{" "}
-            <Code>PostgreSQL</Code> et requêtes <Code>GraphQL</Code>.
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 flex-1">
-          <h3 className="text-base font-semibold">Mobile</h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Développement mobile cross-platform avec <Code>Flutter</Code> et{" "}
-            <Code>Dart</Code>. En apprentissage actif pour compléter mon stack
-            full stack.
-          </p>
-        </div>
+        {t.classic.skillsDetails.map((detail) => (
+          <div key={detail.title} className="flex flex-col gap-2 flex-1">
+            <h3 className="text-base font-semibold">{detail.title}</h3>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {detail.parts.map((part, i) =>
+                typeof part === "string" ? part : <Code key={i}>{part.code}</Code>
+              )}
+            </p>
+          </div>
+        ))}
       </div>
     </Section>
   );

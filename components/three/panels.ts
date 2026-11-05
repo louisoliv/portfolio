@@ -11,7 +11,6 @@ type Vec3 = [number, number, number]
 
 export type Panel = {
   id: SectionId
-  label: string
   position: Vec3
   // Unit vector pointing from the panel towards the cockpit interior
   normal: Vec3
@@ -23,10 +22,10 @@ export type CameraView = {
 }
 
 export const PANELS: Panel[] = [
-  { id: 'experience', label: 'Expérience', position: [0.83, 0.33, 0.72], normal: [-0.74, -0.11, -0.67] },
-  { id: 'projects', label: 'Projets', position: [-0.83, 0.33, 0.72], normal: [0.74, -0.11, -0.67] },
-  { id: 'skills', label: 'Compétences', position: [0.83, -0.33, 0.72], normal: [-0.73, 0.36, -0.57] },
-  { id: 'contact', label: 'Contact', position: [-0.83, -0.33, 0.72], normal: [0.73, 0.36, -0.57] },
+  { id: 'experience', position: [0.83, 0.33, 0.72], normal: [-0.74, -0.11, -0.67] },
+  { id: 'projects', position: [-0.83, 0.33, 0.72], normal: [0.74, -0.11, -0.67] },
+  { id: 'skills', position: [0.83, -0.33, 0.72], normal: [-0.73, 0.36, -0.57] },
+  { id: 'contact', position: [-0.83, -0.33, 0.72], normal: [0.73, 0.36, -0.57] },
 ]
 
 // Pilot seat: behind the center, facing the octagonal front window (+z)

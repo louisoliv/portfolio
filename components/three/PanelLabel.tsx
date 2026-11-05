@@ -12,11 +12,12 @@ const LABEL_POSITION: [number, number, number] = [0, -0.29, 0.02]
 type PanelLabelProps = {
   panel: Panel
   code: string
+  label: string
   highlighted: boolean
 }
 
 // Stencilled marking painted on the wall under a panel, lit up while the panel is hovered
-export function PanelLabel({ panel, code, highlighted }: PanelLabelProps) {
+export function PanelLabel({ panel, code, label, highlighted }: PanelLabelProps) {
   const quaternion = usePanelQuaternion(panel)
 
   return (
@@ -38,7 +39,7 @@ export function PanelLabel({ panel, code, highlighted }: PanelLabelProps) {
               : 'text-zinc-200/85 [text-shadow:0_1px_3px_rgb(0_0_0/0.9)]',
           )}
         >
-          {code} · {panel.label}
+          {code} · {label}
         </p>
       </Html>
     </group>

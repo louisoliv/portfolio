@@ -3,13 +3,15 @@
 import { useEffect, useState } from 'react'
 
 // Decorative boot sequence: each step is marked OK once the real loading progress passes it
-const BOOT_STEPS = [
-  { label: 'Connexion au réseau impérial', at: 0 },
-  { label: 'Chargement de la structure du cockpit', at: 15 },
-  { label: 'Calibration des panneaux de contrôle', at: 45 },
-  { label: "Alignement de l'ordinateur de visée", at: 75 },
-  { label: 'Systèmes opérationnels', at: 100 },
-]
+const BOOT_STEP_THRESHOLDS = [0, 15, 45, 75, 100]
+
+export type BootTexts = {
+  sequence: string
+  title: string
+  progressLabel: string
+  // One per threshold
+  steps: string[]
+}
 
 // Plain class join: this screen is in the first JS payload, so no tailwind-merge (no conflicting classes here)
 const cx = (...classes: (string | false)[]) => classes.filter(Boolean).join(' ')
@@ -28,6 +30,7 @@ let bootStart: number | null = null
 type LoadingScreenProps = {
   // 0 to 100
   progress: number
+  texts: BootTexts
   done?: boolean
   // Called once, when the fade-out starts
   onFinished?: () => void
@@ -35,7 +38,7 @@ type LoadingScreenProps = {
 
 // Full-screen overlay shown while the 3D code and the cockpit model load.
 // No three.js import: it is also the placeholder of the dynamically imported scene.
-export function LoadingScreen({ progress, done = false, onFinished }: LoadingScreenProps) {
+export function LoadingScreen({ progress, texts, done = false, onFinished }: LoadingScreenProps) {
   const [elapsed, setElapsed] = useState(0)
   const shown = Math.min(progress, (elapsed / MIN_BOOT_MS) * 100)
   const finished = done && shown >= 100
@@ -76,14 +79,14 @@ export function LoadingScreen({ progress, done = false, onFinished }: LoadingScr
       <div className="w-full max-w-md px-6">
         <p className="text-[10px] uppercase tracking-[0.25em] text-red-400">
           <span aria-hidden className="mr-2 inline-block size-1.5 bg-red-500 motion-safe:animate-pulse" />
-          SEC-00 {'//'} Séquence de démarrage
+          SEC-00 {'//'} {texts.sequence}
         </p>
         {/* Not a heading: the page h1 is the name, in the text version */}
-        <p className="mt-3 text-lg uppercase tracking-[0.2em] text-zinc-100">Initialisation des systèmes…</p>
+        <p className="mt-3 text-lg uppercase tracking-[0.2em] text-zinc-100">{texts.title}</p>
 
         <div
           role="progressbar"
-          aria-label="Chargement du cockpit"
+          aria-label={texts.progressLabel}
           aria-valuemin={0}
           aria-valuemax={100}
           aria-valuenow={rounded}
@@ -99,17 +102,16 @@ export function LoadingScreen({ progress, done = false, onFinished }: LoadingScr
         <p className="mt-2 text-right text-xs tabular-nums text-zinc-400">{rounded} %</p>
 
         <ul className="mt-4 space-y-1.5 text-xs">
-          {BOOT_STEPS.map((step, i) => {
-            const next = BOOT_STEPS[i + 1]
-            const started = rounded >= step.at
+          {texts.steps.map((label, i) => {
+            const started = rounded >= BOOT_STEP_THRESHOLDS[i]
             // A step is OK once the next one has started (the last one at 100 %)
-            const ok = next ? rounded >= next.at : rounded >= 100
+            const ok = rounded >= (BOOT_STEP_THRESHOLDS[i + 1] ?? 100)
             return (
               <li
-                key={step.label}
+                key={label}
                 className={cx('flex justify-between gap-4', started ? 'text-zinc-300' : 'text-zinc-700')}
               >
-                <span>{step.label}</span>
+                <span>{label}</span>
                 <span className={ok ? 'text-red-400' : 'text-zinc-600'}>{ok ? '[ OK ]' : started ? '[ … ]' : '[    ]'}</span>
               </li>
             )

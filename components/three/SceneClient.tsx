@@ -1,19 +1,26 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
-import { LoadingScreen } from './LoadingScreen'
+import { classicPath, type Lang } from '@/app/_data/i18n'
+import { BootTexts, LoadingScreen } from './LoadingScreen'
 
-const BOOT_PLACEHOLDER = (
-  <div className="relative h-full w-full">
-    <LoadingScreen progress={0} />
-  </div>
-)
+// dynamic()'s loading component takes no props: its texts come through context
+const BootTextsContext = createContext<BootTexts | null>(null)
+
+function BootPlaceholder() {
+  const texts = useContext(BootTextsContext)
+  return (
+    <div className="relative h-full w-full">
+      {texts && <LoadingScreen progress={0} texts={texts} />}
+    </div>
+  )
+}
 
 // The R3F Canvas must never render on the server.
 // While the 3D code downloads, show the boot screen at 0 %: the scene takes over with the same screen.
-const Scene = dynamic(() => import('./Scene'), { ssr: false, loading: () => BOOT_PLACEHOLDER })
+const Scene = dynamic(() => import('./Scene'), { ssr: false, loading: () => <BootPlaceholder /> })
 
 // Opens the cockpit even on a device below the thresholds (link in AutoRedirectNotice)
 const FORCE_3D_PARAM = 'force3d'
@@ -40,16 +47,25 @@ function getModestDeviceReason(): string | null {
   return null
 }
 
-export default function SceneClient() {
+type SceneClientProps = {
+  lang: Lang
+  boot: BootTexts
+}
+
+export default function SceneClient({ lang, boot }: SceneClientProps) {
   const router = useRouter()
   const [canRun3d, setCanRun3d] = useState(false)
 
   useEffect(() => {
     const forced = new URLSearchParams(window.location.search).has(FORCE_3D_PARAM)
     if (forced || getModestDeviceReason() === null) setCanRun3d(true)
-    else router.replace('/classique?auto=1')
-  }, [router])
+    else router.replace(`${classicPath(lang)}?auto=1`)
+  }, [router, lang])
 
   // Until the check passes, the scene (and its download) is not even requested
-  return canRun3d ? <Scene /> : BOOT_PLACEHOLDER
+  return (
+    <BootTextsContext.Provider value={boot}>
+      {canRun3d ? <Scene initialLang={lang} boot={boot} /> : <BootPlaceholder />}
+    </BootTextsContext.Provider>
+  )
 }
