@@ -1,7 +1,7 @@
 // Cockpit sound effects, served from public/sounds (see the README there).
 // They only ever play in response to a click: browsers block sound before any interaction.
 const SOUND_FILES = {
-  alert: '/sounds/alert.wav',
+  alert: '/sounds/alert.mp3',
   heroShow: '/sounds/hero-show.wav',
   heroHide: '/sounds/back.wav',
   sectionOpen: '/sounds/section-open.wav',

@@ -8,12 +8,11 @@ const CHAMFER = 'polygon(16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16p
 // Colour themes, exposed to Tailwind as the `hud-*` colours (see tailwind.config.ts).
 // Values are "r g b" so Tailwind opacity modifiers keep working.
 export const CARD_THEMES = {
-  cockpit: {
-    label: 'Cockpit',
+  // Red frame, only during the red alert
+  alert: {
     vars: { bg: '10 10 12', line: '239 68 68', title: '255 255 255', fg: '228 228 231', muted: '161 161 170', accent: '248 113 113' },
   },
-  datapadDark: {
-    label: 'Datapad sombre',
+  normal: {
     vars: { bg: '6 7 9', line: '203 213 225', title: '255 255 255', fg: '226 232 240', muted: '148 163 184', accent: '239 68 68' },
   },
 } as const
@@ -32,7 +31,7 @@ type ImperialCardProps = {
   className?: string
 }
 
-export function ImperialCard({ code, title, lang, theme = 'cockpit', showHeading = true, children, className }: ImperialCardProps) {
+export function ImperialCard({ code, title, lang, theme = 'normal', showHeading = true, children, className }: ImperialCardProps) {
   const { t } = getPortfolio(lang)
   const { vars } = CARD_THEMES[theme]
   const style = {

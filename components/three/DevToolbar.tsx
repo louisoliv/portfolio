@@ -1,7 +1,6 @@
 'use client'
 
 import { PANELS, SectionId, ViewId } from './panels'
-import { CARD_THEMES, CardTheme } from './ImperialCard'
 
 type DevToolbarProps = {
   view: ViewId
@@ -9,20 +8,16 @@ type DevToolbarProps = {
   freeMode: boolean
   onFreeModeChange: (freeMode: boolean) => void
   sectionLabels: Record<SectionId, string>
-  cardTheme: CardTheme
-  onCardThemeChange: (theme: CardTheme) => void
   compact: boolean
 }
 
-// Temporary dev controls: jump between viewpoints, toggle free camera, compare card themes
+// Temporary dev controls: jump between viewpoints, toggle free camera
 export function DevToolbar({
   view,
   onViewChange,
   freeMode,
   onFreeModeChange,
   sectionLabels,
-  cardTheme,
-  onCardThemeChange,
   compact,
 }: DevToolbarProps) {
   const views: { id: ViewId; label: string }[] = [
@@ -45,20 +40,6 @@ export function DevToolbar({
       <label className="ml-2 flex cursor-pointer items-center gap-1">
         <input type="checkbox" checked={freeMode} onChange={(e) => onFreeModeChange(e.target.checked)} />
         Mode libre
-      </label>
-      <label className="ml-2 flex items-center gap-1">
-        Thème
-        <select
-          value={cardTheme}
-          onChange={(e) => onCardThemeChange(e.target.value as CardTheme)}
-          className="border border-cyan-300/30 bg-black px-1 py-0.5"
-        >
-          {(Object.keys(CARD_THEMES) as CardTheme[]).map((theme) => (
-            <option key={theme} value={theme}>
-              {CARD_THEMES[theme].label}
-            </option>
-          ))}
-        </select>
       </label>
     </>
   )

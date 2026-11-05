@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { Volume2, VolumeX } from 'lucide-react'
 import { Canvas, ComputeFunction } from '@react-three/fiber'
 import { PerformanceMonitor, useProgress } from '@react-three/drei'
-import { Cockpit } from './Cockpit'
+import { Cockpit, pickModelUrl } from './Cockpit'
 import { CameraRig } from './CameraRig'
 import { HeroCard, HeroCardContent } from './HeroCard'
 import { DevToolbar } from './DevToolbar'
@@ -26,7 +26,8 @@ import { classicPath, cockpitPath, LANGS, type Lang } from '@/app/_data/i18n'
 
 const isDev = process.env.NODE_ENV === 'development'
 
-const ALERT_DURATION_MS = 8000
+// Same length as the alert sound (public/sounds/alert.mp3)
+const ALERT_DURATION_MS = 6000
 
 // Rendering resolution: device pixel ratio capped at 2, dropped to 1 when the scene struggles
 const MAX_DPR = 2
@@ -77,9 +78,10 @@ export default function Scene({ initialLang, boot }: SceneProps) {
     [view],
   )
   const [freeMode, setFreeMode] = useState(false)
-  const [cardTheme, setCardTheme] = useState<CardTheme>('cockpit')
   // Red alert: triggered by the console's left button, ends by itself
   const [alertActive, setAlertActive] = useState(false)
+  // The info cards turn red with the cockpit during the alert
+  const cardTheme: CardTheme = alertActive ? 'alert' : 'normal'
   const alertTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const onAlertClick = () => {
     if (alertTimer.current) return
@@ -107,6 +109,7 @@ export default function Scene({ initialLang, boot }: SceneProps) {
   const [hoveredPanel, setHoveredPanel] = useState<SectionId | null>(null)
   // Phones and small windows: cards in a bottom sheet, section bar instead of reachable panels
   const compact = useCompactLayout()
+  const [modelUrl] = useState(pickModelUrl)
   const { progress, active } = useProgress()
   // drei's <Html> elements sit above every other DOM layer (huge z-index), including the
   // boot screen: only mount them once the boot sequence is over
@@ -178,6 +181,7 @@ export default function Scene({ initialLang, boot }: SceneProps) {
         {/* Loading is shown by the LoadingScreen overlay below */}
         <Suspense fallback={null}>
           <Cockpit
+            modelUrl={modelUrl}
             openPanel={openPanel?.id}
             onPanelSelect={goTo}
             onPanelHover={onPanelHover}
@@ -327,8 +331,6 @@ export default function Scene({ initialLang, boot }: SceneProps) {
           freeMode={freeMode}
           onFreeModeChange={setFreeMode}
           sectionLabels={t.cockpit.sections}
-          cardTheme={cardTheme}
-          onCardThemeChange={setCardTheme}
           compact={compact}
         />
       )}

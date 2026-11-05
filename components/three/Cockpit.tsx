@@ -1,7 +1,7 @@
 'use client'
 
 /*
-Hand-written in the gltfjsx format (no --transform) from public/models/cockpit.glb
+Hand-written in the gltfjsx format (no --transform) from assets/models/cockpit.glb
 Model: "Tie Fighter Cockpit Version 2" by MichaelEGA, licensed under CC BY 4.0
 */
 
@@ -13,8 +13,20 @@ import { GLTF } from 'three-stdlib'
 import { PANELS, SectionId } from './panels'
 import { splitPanels } from './panelGeometry'
 import { InteractivePanel } from './InteractivePanel'
+import { isCompactScreen } from './useCompactLayout'
 
-const MODEL_URL = '/models/cockpit.glb'
+// Optimized copies of cockpit.glb (Draco geometry, WebP textures), meshes kept separate.
+// Must stay Draco, not meshopt: panelGeometry.ts relies on the original vertex positions.
+const MODEL_URL = '/models/cockpit-optimized.glb'
+// Same model with 512 px textures: about 31 MB of GPU memory instead of 103 MB
+const MODEL_URL_MOBILE = '/models/cockpit-mobile.glb'
+
+// Chosen once on arrival: rotating a phone or resizing the window must not reload the model.
+// Not preloaded on purpose, a phone would download the desktop version too.
+export const pickModelUrl = () => (isCompactScreen() ? MODEL_URL_MOBILE : MODEL_URL)
+
+// Self-hosted decoder (from three/examples/jsm/libs/draco/gltf) rather than Google's CDN
+useGLTF.setDecoderPath('/draco/')
 
 type GLTFResult = GLTF & {
   nodes: {
@@ -70,6 +82,7 @@ type GLTFResult = GLTF & {
 }
 
 type CockpitProps = JSX.IntrinsicElements['group'] & {
+  modelUrl: string
   // Panel whose section is open, kept highlighted
   openPanel?: SectionId
   onPanelSelect: (id: SectionId) => void
@@ -96,6 +109,7 @@ const ALERT_BUTTON_SIZE: [number, number, number] = [0.05, 0.05, 0.05]
 const ALERT_RING_POSITION: [number, number, number] = [0.1, -0.201, 0.452]
 
 export function Cockpit({
+  modelUrl,
   openPanel,
   onPanelSelect,
   onPanelHover,
@@ -104,7 +118,7 @@ export function Cockpit({
   alertActive,
   ...props
 }: CockpitProps) {
-  const { nodes, materials } = useGLTF(MODEL_URL) as GLTFResult
+  const { nodes, materials } = useGLTF(modelUrl) as GLTFResult
   // Interactive panels are cut out of the shared meshes so they can move on hover
   const plates = useMemo(() => splitPanels(nodes.triangles_triangles_0.geometry), [nodes])
   const lights = useMemo(() => splitPanels(nodes.triangles_lights_triangles_lights_0.geometry), [nodes])
@@ -205,5 +219,3 @@ export function Cockpit({
     </group>
   )
 }
-
-useGLTF.preload(MODEL_URL)
