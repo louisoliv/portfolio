@@ -11,7 +11,7 @@ export const fr = {
 
   hero: {
     availability: "En alternance · ROAV7",
-    role: "Concepteur d'application · Développeur Full Stack",
+    role: "Concepteur d'applications · Développeur Full Stack",
     // La phrase est coupée autour de ses deux liens (Zone01 et GitHub)
     introBeforeSchool:
       "Développeur full stack passionné par la création d'interfaces modernes et d'APIs robustes. En formation à",
@@ -30,14 +30,14 @@ export const fr = {
 
   experiences: {
     roav7: {
-      title: "Développeur R&D",
+      title: "Développeur logiciel",
       company: "Entreprise ROAV7 · Alternance",
       description:
         "Développement d'un logiciel pour les données collectées par drone. Travail en autonomie, encadré par ma tutrice, responsable du pôle R&D. Stack Node.js, Electron, React, TypeScript, Tailwind et SQLite3.",
       badge: "Alternance",
     },
     ares: {
-      title: "Développeur Full Stack",
+      title: "Lead developer",
       company: "Entreprise Arès (franchisé McDonald's) · Alternance terminée",
       description:
         "Développement d'une application métier (ERP McDonald's) en environnement professionnel. Travail solitaire puis en équipe (sur 2 mois), gestion de versions Git, déploiement continu. Stack Python, Flask, SQLAlchemy, React, TypeScript, Tailwind, Docker et PostgreSQL.",

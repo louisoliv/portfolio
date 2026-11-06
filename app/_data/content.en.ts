@@ -32,14 +32,14 @@ export const en: Content = {
 
   experiences: {
     roav7: {
-      title: "R&D Developer",
+      title: "Software Developer",
       company: "ROAV7 · Apprenticeship",
       description:
         "Development of software for data collected by drones. Autonomous work, supervised by my mentor, head of the R&D department. Stack: Node.js, Electron, React, TypeScript, Tailwind and SQLite3.",
       badge: "Apprenticeship",
     },
     ares: {
-      title: "Full Stack Developer",
+      title: "Lead Developer",
       company: "Arès (McDonald's franchisee) · Apprenticeship completed",
       description:
         "Development of a business application (McDonald's ERP) in a professional environment. Worked solo, then in a team (for 2 months), Git version control, continuous deployment. Stack: Python, Flask, SQLAlchemy, React, TypeScript, Tailwind, Docker and PostgreSQL.",
@@ -100,7 +100,7 @@ export const en: Content = {
 
   contact: {
     pitch: "A project, an opportunity? Don't hesitate.",
-    cvDescription: "Download my CV (PDF)",
+    cvDescription: "Download my CV (PDF, in French)",
     linkedinProfile: "LinkedIn profile",
   },
 
