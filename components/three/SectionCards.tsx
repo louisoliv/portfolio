@@ -1,8 +1,9 @@
 import Image from 'next/image'
-import { ArrowUpRight, FileText, MapPin } from 'lucide-react'
+import { ArrowUpRight, FileText, Mail, MapPin } from 'lucide-react'
 import { getPortfolio, EMAIL, LINKEDIN, GITHUB, LOCATIONS } from '@/app/_data/portfolio'
 import type { Lang } from '@/app/_data/i18n'
 import { GithubIcon } from '@/app/_components/icons/GithubIcon'
+import { LinkedInIcon } from '@/app/_components/icons/LinkedIn'
 import { cn } from '@/lib/utils'
 import { SectionId } from './panels'
 
@@ -149,12 +150,9 @@ function SkillsCard({ lang }: CardContentProps) {
 
 function ContactCard({ lang }: CardContentProps) {
   const { t, CV } = getPortfolio(lang)
-  const logo = (src: string, alt: string) => (
-    <Image src={src} alt={alt} width={20} height={20} className="object-contain" />
-  )
   const contacts = [
-    { label: 'Email', value: EMAIL.address, url: EMAIL.url, icon: logo(EMAIL.icon, 'Email') },
-    { label: 'LinkedIn', value: 'Louis Olivier', url: LINKEDIN.url, icon: logo(LINKEDIN.icon, 'LinkedIn') },
+    { label: 'Email', value: EMAIL.address, url: EMAIL.url, icon: <Mail size={18} aria-hidden className="text-black" /> },
+    { label: 'LinkedIn', value: 'Louis Olivier', url: LINKEDIN.url, icon: <LinkedInIcon size={18} aria-hidden className="text-black" /> },
     { label: 'GitHub', value: GITHUB.handle, url: GITHUB.url, icon: <GithubIcon size={18} aria-hidden className="text-black" /> },
     { label: CV.label, value: CV.description, url: CV.url, icon: <FileText size={18} aria-hidden className="text-black" /> },
   ]

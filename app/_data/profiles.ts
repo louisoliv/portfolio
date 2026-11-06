@@ -8,5 +8,4 @@ export const GITHUB = {
 
 export const LINKEDIN = {
   url: "https://www.linkedin.com/in/louis-olivier-2874a9304",
-  icon: "https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png",
 };

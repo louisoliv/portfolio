@@ -35,7 +35,6 @@ export const CONTACT_PHOTO = "/_next/static/media/Fond-blanc2.1203aefd.jpg";
 export const EMAIL = {
   address: "louisolivier7603@gmail.com",
   url: "mailto:louisolivier7603@gmail.com",
-  icon: "https://banner2.cleanpng.com/20240403/ras/transparent-gmail-icon-google-mail-logo-with-vibrant-colors-and-m660d4ec2bd9db0.46699070.webp",
 };
 
 // The PDF goes in public/, it is served at this path

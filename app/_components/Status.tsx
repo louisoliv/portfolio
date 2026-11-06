@@ -1,4 +1,6 @@
+import { Mail } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { LinkedInIcon } from "./icons/LinkedIn";
 import { Badge } from "@/components/ui/badge";
 import { Section } from "./Section";
 import { SideProject } from "./SideProject";
@@ -65,14 +67,14 @@ export const Status = ({ lang }: { lang: Lang }) => {
             <ContactCard
               name="Louis Olivier"
               image={CONTACT_PHOTO}
-              mediumImage={EMAIL.icon}
+              icon={<Mail size={20} aria-hidden className="text-foreground" />}
               descritpon={EMAIL.address}
               url={EMAIL.url}
             />
             <ContactCard
               name="Louis Olivier"
               image={CONTACT_PHOTO}
-              mediumImage={LINKEDIN.icon}
+              icon={<LinkedInIcon size={20} aria-hidden className="text-foreground" />}
               descritpon={t.contact.linkedinProfile}
               url={LINKEDIN.url}
             />

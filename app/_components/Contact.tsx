@@ -1,8 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import { Section } from "./Section";
 import { ContactCard } from "./ContactCard";
-import { FileText, MapPin } from "lucide-react";
+import { FileText, Mail, MapPin } from "lucide-react";
 import { GithubIcon } from "./icons/GithubIcon";
+import { LinkedInIcon } from "./icons/LinkedIn";
 import {
   getPortfolio,
   EMAIL,
@@ -33,21 +34,20 @@ export const Contact = ({ lang }: { lang: Lang }) => {
         <ContactCard
           name="Email"
           image={CONTACT_PHOTO}
-          mediumImage={EMAIL.icon}
+          icon={<Mail size={20} aria-hidden className="text-foreground" />}
           descritpon={EMAIL.address}
           url={EMAIL.url}
         />
         <ContactCard
           name="LinkedIn"
           image={CONTACT_PHOTO}
-          mediumImage={LINKEDIN.icon}
+          icon={<LinkedInIcon size={20} aria-hidden className="text-foreground" />}
           descritpon="Louis Olivier"
           url={LINKEDIN.url}
         />
         <ContactCard
           name="GitHub"
           image={CONTACT_PHOTO}
-          mediumImage=""
           icon={<GithubIcon size={20} aria-hidden className="text-foreground" />}
           descritpon={GITHUB.handle}
           url={GITHUB.url}
@@ -55,7 +55,6 @@ export const Contact = ({ lang }: { lang: Lang }) => {
         <ContactCard
           name={CV.label}
           image={CONTACT_PHOTO}
-          mediumImage=""
           icon={<FileText size={20} aria-hidden className="text-foreground" />}
           descritpon={CV.description}
           url={CV.url}
