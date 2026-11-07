@@ -123,7 +123,7 @@ const buildSideProjects = (t: Content): SideProjectProps[] => [
   {
     ...t.projects.game2048,
     Logo: Rocket,
-    // No public repository yet: add its url here once it is on GitHub
+    url: "https://github.com/louisoliv/twenty-forty-eight",
     tags: ["Dart", "Flutter"],
   },
   {
