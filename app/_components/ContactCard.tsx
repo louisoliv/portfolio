@@ -1,14 +1,13 @@
 import { Card } from "@/components/ui/card";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
 
 export type ContactCardProps = {
   image: string;
-  mediumImage: string;
   name: string;
   descritpon: string;
   url: string;
+  icon: React.ReactNode;
 };
 
 export const ContactCard = (props: ContactCardProps) => {
@@ -17,13 +16,7 @@ export const ContactCard = (props: ContactCardProps) => {
       <Card className="p-3 bg-accent/10 hover:bg-accent/30 transition-colors group flex items-center gap-4 border-border/60 hover:border-primary/30">
         {/* Icône service */}
         <div className="size-9 rounded-lg bg-accent flex items-center justify-center shrink-0 overflow-hidden">
-          <Image
-            src={props.mediumImage}
-            alt={props.name}
-            width={22}
-            height={22}
-            className="object-contain"
-          />
+          {props.icon}
         </div>
 
         <div className="mr-auto min-w-0">

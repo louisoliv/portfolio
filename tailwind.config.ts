@@ -24,6 +24,15 @@ const config = {
     },
     extend: {
       colors: {
+        // Cockpit info cards: values set per theme in components/three/ImperialCard.tsx
+        hud: {
+          bg: "rgb(var(--hud-bg) / <alpha-value>)",
+          line: "rgb(var(--hud-line) / <alpha-value>)",
+          title: "rgb(var(--hud-title) / <alpha-value>)",
+          fg: "rgb(var(--hud-fg) / <alpha-value>)",
+          muted: "rgb(var(--hud-muted) / <alpha-value>)",
+          accent: "rgb(var(--hud-accent) / <alpha-value>)",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

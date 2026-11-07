@@ -1,27 +1,20 @@
-import type { Metadata } from "next";
 import { Anek_Tamil } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { cn } from "@/lib/utils";
+import type { Lang } from "../_data/i18n";
 
 const AnekTamil = Anek_Tamil({
   subsets: ["latin"],
   variable: "--font-caption",
 });
 
-export const metadata: Metadata = {
-  title: "Louis OLIVIER ",
-  description: "Online portfolio with React, Next and Tailwind",
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+// Each language has its own root layout (app/(fr), app/(en)), so that
+// the <html lang> attribute is right in the HTML sent by the server
+export const RootHtml = ({ lang, children }: { lang: Lang; children: React.ReactNode }) => {
   return (
-    <html lang="en" className="h-full">
+    <html lang={lang} className="h-full">
       <body
         className={cn(
           GeistSans.variable,
@@ -34,4 +27,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+};

@@ -5,19 +5,21 @@ export type SideProjectProps = {
   Logo: LucideIcon;
   title: string;
   description: string;
-  url: string;
+  // Optional: some projects have no public repository
+  url?: string;
+  // Shown instead of a link, e.g. "Code privé"
+  privateNote?: string;
   tags?: string[];
   featured?: boolean;
+  featuredBadge?: string;
 };
 
 export const SideProject = (props: SideProjectProps) => {
-  return (
-    <Link
-      href={props.url}
-      className={`group flex items-start gap-4 p-3 rounded-xl hover:bg-accent/40 transition-colors ${
-        props.featured ? "border border-primary/20 bg-primary/5" : ""
-      }`}
-    >
+  const className = `group flex items-start gap-4 p-3 rounded-xl transition-colors ${
+    props.url ? "hover:bg-accent/40" : ""
+  } ${props.featured ? "border border-primary/20 bg-primary/5" : ""}`;
+  const content = (
+    <>
       <span className="bg-accent text-accent-foreground p-3 rounded-lg shrink-0 group-hover:bg-primary/15 transition-colors">
         <props.Logo size={16} />
       </span>
@@ -26,7 +28,12 @@ export const SideProject = (props: SideProjectProps) => {
           <p className="text-sm font-semibold">{props.title}</p>
           {props.featured && (
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-              Alternance
+              {props.featuredBadge}
+            </span>
+          )}
+          {props.privateNote && (
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md border border-border text-muted-foreground">
+              {props.privateNote}
             </span>
           )}
         </div>
@@ -46,6 +53,14 @@ export const SideProject = (props: SideProjectProps) => {
           </div>
         )}
       </div>
+    </>
+  );
+
+  return props.url ? (
+    <Link href={props.url} className={className}>
+      {content}
     </Link>
+  ) : (
+    <div className={className}>{content}</div>
   );
 };

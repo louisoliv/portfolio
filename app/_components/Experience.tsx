@@ -1,6 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Section } from "./Section";
 import Link from "next/link";
+import { getPortfolio } from "../_data/portfolio";
+import type { Lang } from "../_data/i18n";
 
 export type ExperienceItemProps = {
   title: string;
@@ -12,35 +14,13 @@ export type ExperienceItemProps = {
   badgeVariant: "alternance" | "formation";
 };
 
-const EXPERIENCES: ExperienceItemProps[] = [
-  {
-    title: "Développeur Full Stack",
-    company: "Entreprise Arès (franchisé McDonalds) · Alternance",
-    companyUrl: "#",
-    date: "2025 - 2026",
-    description:
-      "Développement d'une application métier (ERP McDonald's) en environnement professionnel. Travail solitaire puis en équipe (sur 2 mois), gestion de versions Git, déploiement continu. Stack Python, Flask, SQLAlchemy, React, TypeScript, Tailwind, Docker et PostgreSQL.",
-    badge: "Alternance",
-    badgeVariant: "alternance",
-  },
-  {
-    title: "Étudiant développeur",
-    company: "Zone01 · Rouen, Normandie",
-    companyUrl: "https://zone01rouennormandie.org/",
-    date: "2023 - 2026",
-    description:
-      "École de code par la pratique - projets collaboratifs en Go, JavaScript et Rust. Pédagogie basée sur des projets réels et du pair-programming. Développement de l'autonomie et de la rigueur technique.",
-    badge: "Formation",
-    badgeVariant: "formation",
-  },
-];
-
-export const Experience = () => {
+export const Experience = ({ lang }: { lang: Lang }) => {
+  const { t, EXPERIENCES } = getPortfolio(lang);
   return (
     <Section className="flex flex-col items-start gap-4" id="experience">
-      <Badge variant="outline">Parcours</Badge>
+      <Badge variant="outline">{t.classic.experienceBadge}</Badge>
       <h2 className="pb-2 text-3xl font-semibold tracking-tight">
-        Expérience &amp; Formation
+        {t.classic.experienceTitle}
       </h2>
 
       <div className="flex flex-col w-full divide-y divide-border">
