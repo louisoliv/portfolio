@@ -3,6 +3,7 @@
 
 export const fr = {
   meta: {
+    shareImageAlt: "Vue depuis le siège du pilote d'un cockpit de TIE Fighter, face au hublot étoilé",
     title: "Louis OLIVIER",
     classicTitle: "Louis OLIVIER - Version classique",
     description:
@@ -54,6 +55,8 @@ export const fr = {
 
   projects: {
     featuredBadge: "Alternance",
+    // Projets sans lien : code professionnel, non publié
+    privateCode: "Code privé",
     erp: {
       title: "ERP McDonald's",
       description:

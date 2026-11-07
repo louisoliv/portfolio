@@ -41,6 +41,7 @@ export const Status = ({ lang }: { lang: Lang }) => {
                   tags={project.tags}
                   featured={project.featured}
                   featuredBadge={project.featuredBadge}
+                  privateNote={project.privateNote}
                 />
               ))}
             </div>

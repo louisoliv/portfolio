@@ -5,6 +5,7 @@ import type { Content } from "./content.fr";
 
 export const en: Content = {
   meta: {
+    shareImageAlt: "View from the pilot's seat of a TIE Fighter cockpit, facing the starry window",
     title: "Louis OLIVIER",
     classicTitle: "Louis OLIVIER - Classic version",
     description:
@@ -56,6 +57,8 @@ export const en: Content = {
 
   projects: {
     featuredBadge: "Apprenticeship",
+    // Projects without a link: professional code, not published
+    privateCode: "Private code",
     erp: {
       title: "McDonald's ERP",
       description:

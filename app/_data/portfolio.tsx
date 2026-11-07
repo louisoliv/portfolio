@@ -106,7 +106,8 @@ const buildSideProjects = (t: Content): SideProjectProps[] => [
   {
     ...t.projects.erp,
     Logo: Briefcase,
-    url: "https://github.com/louisoliv/",
+    // Professional project: the code is not public
+    privateNote: t.projects.privateCode,
     tags: [
       "Python",
       "Flask",
@@ -122,13 +123,13 @@ const buildSideProjects = (t: Content): SideProjectProps[] => [
   {
     ...t.projects.game2048,
     Logo: Rocket,
-    url: "https://github.com/louisoliv/",
+    // No public repository yet: add its url here once it is on GitHub
     tags: ["Dart", "Flutter"],
   },
   {
     ...t.projects.socialNetwork,
     Logo: BarChart3,
-    url: "https://github.com/louisoliv/",
+    url: "https://github.com/Aura-Networking",
     tags: ["Go", "Next.js", "JavaScript", "Docker", "SQLite3"],
   },
   {

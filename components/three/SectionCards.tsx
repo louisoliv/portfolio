@@ -64,6 +64,17 @@ function ExperienceCard({ lang }: CardContentProps) {
   )
 }
 
+// Projects without a public repository are a plain block instead of a link
+function ProjectLink({ href, className, children }: { href?: string; className?: string; children: React.ReactNode }) {
+  return href ? (
+    <ExternalLink href={href} className={className}>
+      {children}
+    </ExternalLink>
+  ) : (
+    <div className={className}>{children}</div>
+  )
+}
+
 function ProjectsCard({ lang }: CardContentProps) {
   const { t, SIDE_PROJECTS, WORKS } = getPortfolio(lang)
   return (
@@ -72,10 +83,11 @@ function ProjectsCard({ lang }: CardContentProps) {
       <ul className="space-y-2">
         {SIDE_PROJECTS.map((project) => (
           <li key={project.title}>
-            <ExternalLink
+            <ProjectLink
               href={project.url}
               className={cn(
-                'group flex gap-3 border p-2 transition-colors hover:border-hud-line/60 hover:bg-hud-line/10',
+                'group flex gap-3 border p-2 transition-colors',
+                project.url && 'hover:border-hud-line/60 hover:bg-hud-line/10',
                 project.featured ? 'border-hud-muted/40 bg-hud-muted/5' : 'border-transparent',
               )}
             >
@@ -84,7 +96,10 @@ function ProjectsCard({ lang }: CardContentProps) {
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-semibold text-hud-title">{project.title}</h3>
                   {project.featured && <Tag>{project.featuredBadge}</Tag>}
-                  <ArrowUpRight size={12} className="ml-auto shrink-0 text-hud-line/60 group-hover:text-hud-accent" />
+                  {project.privateNote && <Tag>{project.privateNote}</Tag>}
+                  {project.url && (
+                    <ArrowUpRight size={12} className="ml-auto shrink-0 text-hud-line/60 group-hover:text-hud-accent" />
+                  )}
                 </div>
                 <p className="mt-0.5 text-xs leading-relaxed text-hud-fg/70">{project.description}</p>
                 {project.tags && (
@@ -95,7 +110,7 @@ function ProjectsCard({ lang }: CardContentProps) {
                   </div>
                 )}
               </div>
-            </ExternalLink>
+            </ProjectLink>
           </li>
         ))}
       </ul>

@@ -72,7 +72,7 @@ export const PortfolioText = ({ lang }: { lang: Lang }) => {
           {SIDE_PROJECTS.map((project) => (
             <li key={project.title}>
               <h3>
-                <TextLink href={project.url}>{project.title}</TextLink>
+                {project.url ? <TextLink href={project.url}>{project.title}</TextLink> : project.title}
               </h3>
               <p>{project.description}</p>
               {project.tags && <p>{project.tags.join(", ")}</p>}
