@@ -15,6 +15,7 @@ import { SECTION_CODES, SectionContent } from './SectionCards'
 import { PanelLabel } from './PanelLabel'
 import { BootTexts, LoadingScreen } from './LoadingScreen'
 import { Starfield } from './Starfield'
+import { Hologram } from './Hologram'
 import { CockpitLights } from './CockpitLights'
 import { playSound, readStoredSoundMuted, setSoundMuted } from './sounds'
 import { MobileSheet } from './MobileSheet'
@@ -107,6 +108,12 @@ export default function Scene({ initialLang, boot }: SceneProps) {
     setMuted(!muted)
   }
   const [heroVisible, setHeroVisible] = useState(true)
+  // The hologram stands where the profile card hangs: never both at once
+  const [hologramVisible, setHologramVisible] = useState(false)
+  const showHero = () => {
+    setHeroVisible(true)
+    setHologramVisible(false)
+  }
   const [hoveredPanel, setHoveredPanel] = useState<SectionId | null>(null)
   // Phones and small windows: cards in a bottom sheet, section bar instead of reachable panels
   const compact = useCompactLayout()
@@ -135,11 +142,28 @@ export default function Scene({ initialLang, boot }: SceneProps) {
   const onConsoleClick = () => {
     if (view === 'overview') {
       playSound(heroVisible ? 'heroHide' : 'heroShow')
-      setHeroVisible(!heroVisible)
+      if (heroVisible) setHeroVisible(false)
+      else showHero()
     } else {
       goTo('overview')
-      setHeroVisible(true)
+      showHero()
     }
+  }
+
+  // The console's right button toggles the hologram, which replaces the profile card;
+  // from a panel view it goes back to the overview with the hologram on
+  const onHologramClick = () => {
+    if (view !== 'overview') {
+      goTo('overview')
+    } else {
+      playSound(hologramVisible ? 'heroHide' : 'heroShow')
+      if (hologramVisible) {
+        setHologramVisible(false)
+        return
+      }
+    }
+    setHologramVisible(true)
+    setHeroVisible(false)
   }
 
   // Panel currently zoomed in, if any (its card goes in the bottom sheet in compact layout)
@@ -149,7 +173,7 @@ export default function Scene({ initialLang, boot }: SceneProps) {
   const onNavSelect = (id: ViewId) => {
     if (id === 'overview' && view === 'overview' && !heroVisible) playSound('heroShow')
     goTo(id)
-    if (id === 'overview') setHeroVisible(true)
+    if (id === 'overview') showHero()
   }
 
   useEffect(() => {
@@ -186,7 +210,10 @@ export default function Scene({ initialLang, boot }: SceneProps) {
             onConsoleClick={onConsoleClick}
             onAlertClick={onAlertClick}
             alertActive={alertActive}
+            onHologramClick={onHologramClick}
+            hologramActive={hologramVisible && view === 'overview'}
           />
+          <Hologram visible={booted && view === 'overview' && hologramVisible} />
           <HeroCard visible={booted && !compact && view === 'overview' && heroVisible} lang={lang} theme={cardTheme} onNavigate={goTo} />
           {booted && PANELS.map((panel) => {
             const code = SECTION_CODES[panel.id]

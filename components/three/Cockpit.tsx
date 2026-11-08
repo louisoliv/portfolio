@@ -90,6 +90,8 @@ type CockpitProps = ThreeElements['group'] & {
   onConsoleClick: () => void
   onAlertClick: () => void
   alertActive: boolean
+  onHologramClick: () => void
+  hologramActive: boolean
 }
 
 // Brightness of the targeting computer's round screen, at rest and on hover
@@ -108,6 +110,12 @@ const ALERT_BUTTON_SIZE: [number, number, number] = [0.05, 0.05, 0.05]
 // Red ring around the button, shown on hover and during the alert
 const ALERT_RING_POSITION: [number, number, number] = [0.1, -0.201, 0.452]
 
+// Upper right round button (on screen): toggles the hologram. Same principle as the alert button.
+const HOLOGRAM_BUTTON_POSITION: [number, number, number] = [-0.107, -0.138, 0.47]
+const HOLOGRAM_BUTTON_SIZE: [number, number, number] = [0.05, 0.05, 0.05]
+// Blue ring, shown on hover and while the hologram is on
+const HOLOGRAM_RING_POSITION: [number, number, number] = [-0.107, -0.139, 0.474]
+
 export function Cockpit({
   modelUrl,
   openPanel,
@@ -116,6 +124,8 @@ export function Cockpit({
   onConsoleClick,
   onAlertClick,
   alertActive,
+  onHologramClick,
+  hologramActive,
   ...props
 }: CockpitProps) {
   const { nodes, materials } = useGLTF(modelUrl) as unknown as GLTFResult
@@ -125,8 +135,9 @@ export function Cockpit({
 
   const [consoleHovered, setConsoleHovered] = useState(false)
   const [alertHovered, setAlertHovered] = useState(false)
-  // One shared cursor: separate useCursor calls would overwrite each other when moving between the two
-  useCursor(consoleHovered || alertHovered)
+  const [hologramHovered, setHologramHovered] = useState(false)
+  // One shared cursor: separate useCursor calls would overwrite each other when moving between them
+  useCursor(consoleHovered || alertHovered || hologramHovered)
   useEffect(() => {
     // The screen material is only used by the round screen. three.js materials are
     // updated imperatively, as React Three Fiber intends
@@ -172,6 +183,25 @@ export function Cockpit({
       <mesh position={ALERT_RING_POSITION} visible={alertHovered || alertActive}>
         <ringGeometry args={[0.02, 0.024, 32]} />
         <meshBasicMaterial color="#ff3020" side={THREE.DoubleSide} toneMapped={false} />
+      </mesh>
+      <mesh
+        position={HOLOGRAM_BUTTON_POSITION}
+        visible={false}
+        onPointerOver={(e: ThreeEvent<PointerEvent>) => {
+          e.stopPropagation()
+          setHologramHovered(true)
+        }}
+        onPointerOut={() => setHologramHovered(false)}
+        onClick={(e: ThreeEvent<MouseEvent>) => {
+          e.stopPropagation()
+          onHologramClick()
+        }}
+      >
+        <boxGeometry args={HOLOGRAM_BUTTON_SIZE} />
+      </mesh>
+      <mesh position={HOLOGRAM_RING_POSITION} visible={hologramHovered || hologramActive}>
+        <ringGeometry args={[0.02, 0.024, 32]} />
+        <meshBasicMaterial color="#4cc3ff" side={THREE.DoubleSide} toneMapped={false} />
       </mesh>
       <group rotation={[-Math.PI / 2, 0, 0]}>
         <group rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
