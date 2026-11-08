@@ -7,7 +7,9 @@ import { classicPath, type Lang } from "../_data/i18n";
 export const CockpitPage = ({ lang }: { lang: Lang }) => {
   const { t } = getPortfolio(lang);
   return (
-    <main className="h-screen w-full bg-black">
+    // h-dvh, not h-screen: on phones 100vh ignores the browser's own bars, which then
+    // cover the bottom of the page (the section bar disappeared under them)
+    <main className="h-dvh w-full bg-black">
       {/* Skip link: first Tab stop, only shown on keyboard focus. Above everything,
           including the boot screen and drei's <Html> layers (huge z-index). */}
       <a
