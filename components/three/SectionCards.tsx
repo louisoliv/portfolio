@@ -31,10 +31,6 @@ function SubTitle({ children }: { children: React.ReactNode }) {
   return <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-hud-accent/80">{children}</p>
 }
 
-// Long lists scroll inside the card instead of growing it
-const SCROLL_AREA =
-  'max-h-[380px] overflow-y-auto pr-2 [scrollbar-color:rgb(var(--hud-line)/0.5)_transparent] [scrollbar-width:thin]'
-
 type CardContentProps = { lang: Lang }
 
 function ExperienceCard({ lang }: CardContentProps) {
@@ -78,7 +74,7 @@ function ProjectLink({ href, className, children }: { href?: string; className?:
 function ProjectsCard({ lang }: CardContentProps) {
   const { t, SIDE_PROJECTS, WORKS } = getPortfolio(lang)
   return (
-    <div className={SCROLL_AREA}>
+    <div>
       <SubTitle>{t.classic.allProjects}</SubTitle>
       <ul className="space-y-2">
         {SIDE_PROJECTS.map((project) => (

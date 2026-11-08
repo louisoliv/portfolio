@@ -38,7 +38,8 @@ export function MobileSheet({ label, closeLabel, onClose, children }: MobileShee
       >
         <span aria-hidden className="h-1.5 w-14 rounded-full bg-zinc-400/70 transition-colors group-hover:bg-zinc-200" />
       </button>
-      <div className="overflow-y-auto overscroll-contain px-2 pb-2">{children}</div>
+      {/* Not a scroll area: it passes its height on, and the card scrolls its own body */}
+      <div className="flex min-h-0 flex-col px-2 pb-2">{children}</div>
     </section>
   )
 }
