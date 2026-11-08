@@ -195,9 +195,23 @@ function ContactCard({ lang }: CardContentProps) {
   )
 }
 
-export const SECTION_CARDS: Record<SectionId, { code: string; Content: (props: CardContentProps) => React.JSX.Element }> = {
-  experience: { code: 'SEC-01', Content: ExperienceCard },
-  projects: { code: 'SEC-02', Content: ProjectsCard },
-  skills: { code: 'SEC-03', Content: SkillsCard },
-  contact: { code: 'SEC-04', Content: ContactCard },
+export const SECTION_CODES: Record<SectionId, string> = {
+  experience: 'SEC-01',
+  projects: 'SEC-02',
+  skills: 'SEC-03',
+  contact: 'SEC-04',
+}
+
+const SECTION_CONTENT: Record<SectionId, (props: CardContentProps) => React.JSX.Element> = {
+  experience: ExperienceCard,
+  projects: ProjectsCard,
+  skills: SkillsCard,
+  contact: ContactCard,
+}
+
+// A fixed component that picks the card: picking it in the caller's render would make
+// React (and its lint rules) treat it as a new component type on every render
+export function SectionContent({ id, lang }: CardContentProps & { id: SectionId }) {
+  const Content = SECTION_CONTENT[id]
+  return <Content lang={lang} />
 }

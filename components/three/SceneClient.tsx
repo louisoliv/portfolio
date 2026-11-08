@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useSyncExternalStore } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import { classicPath, type Lang } from '@/app/_data/i18n'
@@ -47,6 +47,15 @@ function getModestDeviceReason(): string | null {
   return null
 }
 
+// Computed once per page load (it creates a WebGL context to test it)
+let canRun3dCache: boolean | null = null
+function canRun3d() {
+  canRun3dCache ??=
+    new URLSearchParams(window.location.search).has(FORCE_3D_PARAM) || getModestDeviceReason() === null
+  return canRun3dCache
+}
+const noSubscription = () => () => {}
+
 type SceneClientProps = {
   lang: Lang
   boot: BootTexts
@@ -54,18 +63,18 @@ type SceneClientProps = {
 
 export default function SceneClient({ lang, boot }: SceneClientProps) {
   const router = useRouter()
-  const [canRun3d, setCanRun3d] = useState(false)
+  // false on the server and during hydration, then the real answer: no hydration mismatch
+  const ready = useSyncExternalStore(noSubscription, canRun3d, () => false)
 
   useEffect(() => {
-    const forced = new URLSearchParams(window.location.search).has(FORCE_3D_PARAM)
-    if (forced || getModestDeviceReason() === null) setCanRun3d(true)
-    else router.replace(`${classicPath(lang)}?auto=1`)
+    // Read directly, not `ready`: the first effect runs before the real value is rendered
+    if (!canRun3d()) router.replace(`${classicPath(lang)}?auto=1`)
   }, [router, lang])
 
   // Until the check passes, the scene (and its download) is not even requested
   return (
     <BootTextsContext.Provider value={boot}>
-      {canRun3d ? <Scene initialLang={lang} boot={boot} /> : <BootPlaceholder />}
+      {ready ? <Scene initialLang={lang} boot={boot} /> : <BootPlaceholder />}
     </BootTextsContext.Provider>
   )
 }

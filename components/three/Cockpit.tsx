@@ -128,7 +128,9 @@ export function Cockpit({
   // One shared cursor: separate useCursor calls would overwrite each other when moving between the two
   useCursor(consoleHovered || alertHovered)
   useEffect(() => {
-    // The screen material is only used by the round screen
+    // The screen material is only used by the round screen. three.js materials are
+    // updated imperatively, as React Three Fiber intends
+    // eslint-disable-next-line react-hooks/immutability
     materials.screen.emissiveIntensity = consoleHovered ? SCREEN_GLOW_HOVER : SCREEN_GLOW
   }, [consoleHovered, materials])
 

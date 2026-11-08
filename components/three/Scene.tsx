@@ -11,7 +11,7 @@ import { HeroCard, HeroCardContent } from './HeroCard'
 import { DevToolbar } from './DevToolbar'
 import { PanelCard } from './PanelCard'
 import { ImperialCard, CardTheme } from './ImperialCard'
-import { SECTION_CARDS } from './SectionCards'
+import { SECTION_CODES, SectionContent } from './SectionCards'
 import { PanelLabel } from './PanelLabel'
 import { BootTexts, LoadingScreen } from './LoadingScreen'
 import { Starfield } from './Starfield'
@@ -60,12 +60,14 @@ export default function Scene({ initialLang, boot }: SceneProps) {
     if (next === lang) return
     setLang(next)
     window.history.replaceState(null, '', cockpitPath(next))
-    document.documentElement.lang = next
-    document.title = getPortfolio(next).t.meta.title
+  }
+  useEffect(() => {
+    document.documentElement.lang = lang
+    document.title = getPortfolio(lang).t.meta.title
     // The server-rendered text version only exists in the language the page was loaded in
     const textVersion = document.getElementById('portfolio-text')
-    if (textVersion) textVersion.hidden = textVersion.lang !== next
-  }
+    if (textVersion) textVersion.hidden = textVersion.lang !== lang
+  }, [lang])
 
   const [view, setView] = useState<ViewId>('overview')
   // Every camera move goes through here, so that each one has its sound
@@ -99,8 +101,7 @@ export default function Scene({ initialLang, boot }: SceneProps) {
     [],
   )
 
-  const [muted, setMuted] = useState(false)
-  useEffect(() => setMuted(readStoredSoundMuted()), [])
+  const [muted, setMuted] = useState(readStoredSoundMuted)
   const toggleMuted = () => {
     setSoundMuted(!muted)
     setMuted(!muted)
@@ -118,13 +119,11 @@ export default function Scene({ initialLang, boot }: SceneProps) {
 
   // Measured smoothness: the first drop below PERF_BOUNDS lowers the resolution,
   // the second one offers the classic page (never forced: it may be a passing slowdown)
-  const [dpr, setDpr] = useState(() => Math.min(window.devicePixelRatio, MAX_DPR))
+  const [initialDpr] = useState(() => Math.min(window.devicePixelRatio, MAX_DPR))
   const [perfDeclines, setPerfDeclines] = useState(0)
+  const dpr = perfDeclines >= 1 ? Math.min(initialDpr, LOW_DPR) : initialDpr
   const [slowBannerDismissed, setSlowBannerDismissed] = useState(false)
   const onPerfDecline = useCallback(() => setPerfDeclines((count) => count + 1), [])
-  useEffect(() => {
-    if (perfDeclines === 1) setDpr(LOW_DPR)
-  }, [perfDeclines])
   const showSlowBanner = perfDeclines >= 2 && !slowBannerDismissed
 
   // Stable: InteractivePanel reports through an effect that depends on it
@@ -145,7 +144,6 @@ export default function Scene({ initialLang, boot }: SceneProps) {
 
   // Panel currently zoomed in, if any (its card goes in the bottom sheet in compact layout)
   const openPanel = PANELS.find((panel) => panel.id === view)
-  const OpenContent = openPanel && SECTION_CARDS[openPanel.id].Content
 
   // Section bar: "Profil" goes back to the overview with the profile card open
   const onNavSelect = (id: ViewId) => {
@@ -191,7 +189,7 @@ export default function Scene({ initialLang, boot }: SceneProps) {
           />
           <HeroCard visible={booted && !compact && view === 'overview' && heroVisible} lang={lang} theme={cardTheme} onNavigate={goTo} />
           {booted && PANELS.map((panel) => {
-            const { code, Content } = SECTION_CARDS[panel.id]
+            const code = SECTION_CODES[panel.id]
             return (
               <Fragment key={panel.id}>
                 {/* The open panel's card already shows its name */}
@@ -207,7 +205,7 @@ export default function Scene({ initialLang, boot }: SceneProps) {
                     // Long sections scroll inside the card, which keeps a fixed maximum height
                     className="max-h-[560px]"
                   >
-                    <Content lang={lang} />
+                    <SectionContent id={panel.id} lang={lang} />
                   </ImperialCard>
                 </PanelCard>
               </Fragment>
@@ -237,15 +235,15 @@ export default function Scene({ initialLang, boot }: SceneProps) {
           <HeroCardContent lang={lang} theme={cardTheme} onNavigate={goTo} />
         </MobileSheet>
       )}
-      {compact && booted && openPanel && OpenContent && (
+      {compact && booted && openPanel && (
         <MobileSheet label={t.cockpit.sections[openPanel.id]} closeLabel={t.cockpit.close} onClose={() => goTo('overview')}>
           <ImperialCard
-            code={SECTION_CARDS[openPanel.id].code}
+            code={SECTION_CODES[openPanel.id]}
             title={t.cockpit.sections[openPanel.id]}
             lang={lang}
             theme={cardTheme}
           >
-            <OpenContent lang={lang} />
+            <SectionContent id={openPanel.id} lang={lang} />
           </ImperialCard>
         </MobileSheet>
       )}

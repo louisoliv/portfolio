@@ -42,7 +42,11 @@ export function CameraRig({ view, compact = false, freeMode = false }: CameraRig
   const fov = getFov(aspect)
   const compactDistance = compact ? (aspect > 1 ? COMPACT_DISTANCE_LANDSCAPE : COMPACT_DISTANCE_PORTRAIT) : undefined
 
+  // three.js objects are updated imperatively, as React Three Fiber intends
+  // (the rule reports both the effect and the assignment)
+  // eslint-disable-next-line react-hooks/immutability
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/immutability
     camera.fov = fov
     camera.updateProjectionMatrix()
   }, [camera, fov])
