@@ -7,7 +7,7 @@ Model: "Tie Fighter Cockpit Version 2" by MichaelEGA, licensed under CC BY 4.0
 
 import { useEffect, useMemo, useState } from 'react'
 import * as THREE from 'three'
-import { ThreeEvent } from '@react-three/fiber'
+import { ThreeElements, ThreeEvent } from '@react-three/fiber'
 import { useCursor, useGLTF } from '@react-three/drei'
 import { GLTF } from 'three-stdlib'
 import { PANELS, SectionId } from './panels'
@@ -81,7 +81,7 @@ type GLTFResult = GLTF & {
   }
 }
 
-type CockpitProps = JSX.IntrinsicElements['group'] & {
+type CockpitProps = ThreeElements['group'] & {
   modelUrl: string
   // Panel whose section is open, kept highlighted
   openPanel?: SectionId
@@ -118,7 +118,7 @@ export function Cockpit({
   alertActive,
   ...props
 }: CockpitProps) {
-  const { nodes, materials } = useGLTF(modelUrl) as GLTFResult
+  const { nodes, materials } = useGLTF(modelUrl) as unknown as GLTFResult
   // Interactive panels are cut out of the shared meshes so they can move on hover
   const plates = useMemo(() => splitPanels(nodes.triangles_triangles_0.geometry), [nodes])
   const lights = useMemo(() => splitPanels(nodes.triangles_lights_triangles_lights_0.geometry), [nodes])

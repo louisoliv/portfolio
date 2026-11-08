@@ -199,7 +199,7 @@ function ContactCard({ lang }: CardContentProps) {
   )
 }
 
-export const SECTION_CARDS: Record<SectionId, { code: string; Content: (props: CardContentProps) => JSX.Element }> = {
+export const SECTION_CARDS: Record<SectionId, { code: string; Content: (props: CardContentProps) => React.JSX.Element }> = {
   experience: { code: 'SEC-01', Content: ExperienceCard },
   projects: { code: 'SEC-02', Content: ProjectsCard },
   skills: { code: 'SEC-03', Content: SkillsCard },
