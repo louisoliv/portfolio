@@ -227,13 +227,19 @@ export default function Scene({ initialLang, boot }: SceneProps) {
             setHeroVisible(false)
           }}
         >
-          <HeroCardContent lang={lang} theme={cardTheme} onNavigate={goTo} />
+          <HeroCardContent lang={lang} theme={cardTheme} stickyHeader onNavigate={goTo} />
         </MobileSheet>
       )}
       {compact && booted && openPanel && OpenContent && (
         <MobileSheet label={t.cockpit.sections[openPanel.id]} closeLabel={t.cockpit.close} onClose={() => goTo('overview')}>
-          <ImperialCard code={SECTION_CARDS[openPanel.id].code} title={t.cockpit.sections[openPanel.id]} lang={lang} theme={cardTheme}>
-            <OpenContent lang={lang} />
+          <ImperialCard
+            code={SECTION_CARDS[openPanel.id].code}
+            title={t.cockpit.sections[openPanel.id]}
+            lang={lang}
+            theme={cardTheme}
+            stickyHeader
+          >
+            <OpenContent lang={lang} compact />
           </ImperialCard>
         </MobileSheet>
       )}

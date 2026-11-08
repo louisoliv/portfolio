@@ -27,11 +27,13 @@ type ImperialCardProps = {
   theme?: CardTheme
   // Hide the large title when the content brings its own main heading
   showHeading?: boolean
+  // Keep the header bar visible while scrolling (mobile bottom sheet)
+  stickyHeader?: boolean
   children: React.ReactNode
   className?: string
 }
 
-export function ImperialCard({ code, title, lang, theme = 'normal', showHeading = true, children, className }: ImperialCardProps) {
+export function ImperialCard({ code, title, lang, theme = 'normal', showHeading = true, stickyHeader = false, children, className }: ImperialCardProps) {
   const { t } = getPortfolio(lang)
   const { vars } = CARD_THEMES[theme]
   const style = {
@@ -54,7 +56,14 @@ export function ImperialCard({ code, title, lang, theme = 'normal', showHeading 
           className="pointer-events-none absolute inset-0 bg-[repeating-linear-gradient(0deg,rgba(255,255,255,0.04)_0px,rgba(255,255,255,0.04)_1px,transparent_1px,transparent_3px)]"
         />
 
-        <header className="flex items-center justify-between gap-4 border-b border-hud-line/40 bg-hud-line/10 px-5 py-2 text-[10px] uppercase tracking-[0.2em]">
+        <header
+          className={cn(
+            'flex items-center justify-between gap-4 border-b border-hud-line/40 bg-hud-line/10 px-5 py-2 text-[10px] uppercase tracking-[0.2em]',
+            // Opaque when sticky, so the scrolled content does not show through
+            stickyHeader &&
+              'sticky top-0 z-10 bg-hud-bg [background-image:linear-gradient(rgb(var(--hud-line)/0.1),rgb(var(--hud-line)/0.1))]',
+          )}
+        >
           <span className="flex items-center gap-2 text-hud-accent">
             <span aria-hidden className="size-1.5 bg-hud-accent motion-safe:animate-pulse" />
             {code} {'//'} <span className="text-hud-title">{title}</span>

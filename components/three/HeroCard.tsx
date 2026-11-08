@@ -30,14 +30,15 @@ const BUTTON =
 type HeroCardContentProps = {
   lang: Lang
   theme: CardTheme
+  stickyHeader?: boolean
   onNavigate: (id: SectionId) => void
 }
 
 // The profile card itself, shown in the window (HeroCard) or in the mobile bottom sheet
-export function HeroCardContent({ lang, theme, onNavigate }: HeroCardContentProps) {
+export function HeroCardContent({ lang, theme, stickyHeader, onNavigate }: HeroCardContentProps) {
   const { t, HERO, STATS } = getPortfolio(lang)
   return (
-    <ImperialCard code="SEC-00" title={t.cockpit.profileCardTitle} lang={lang} theme={theme} showHeading={false}>
+    <ImperialCard code="SEC-00" title={t.cockpit.profileCardTitle} lang={lang} theme={theme} showHeading={false} stickyHeader={stickyHeader}>
       <p className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-hud-muted">
         <span aria-hidden className="size-1.5 rounded-full bg-emerald-400 motion-safe:animate-pulse" />
         {HERO.availability}

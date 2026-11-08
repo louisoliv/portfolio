@@ -35,7 +35,8 @@ function SubTitle({ children }: { children: React.ReactNode }) {
 const SCROLL_AREA =
   'max-h-[380px] overflow-y-auto pr-2 [scrollbar-color:rgb(var(--hud-line)/0.5)_transparent] [scrollbar-width:thin]'
 
-type CardContentProps = { lang: Lang }
+// compact: the card is in the mobile bottom sheet, which already scrolls on its own
+type CardContentProps = { lang: Lang; compact?: boolean }
 
 function ExperienceCard({ lang }: CardContentProps) {
   const { EXPERIENCES } = getPortfolio(lang)
@@ -75,10 +76,11 @@ function ProjectLink({ href, className, children }: { href?: string; className?:
   )
 }
 
-function ProjectsCard({ lang }: CardContentProps) {
+function ProjectsCard({ lang, compact }: CardContentProps) {
   const { t, SIDE_PROJECTS, WORKS } = getPortfolio(lang)
   return (
-    <div className={SCROLL_AREA}>
+    // No inner scroll area in the bottom sheet: nested scrolling is awkward on touch screens
+    <div className={compact ? undefined : SCROLL_AREA}>
       <SubTitle>{t.classic.allProjects}</SubTitle>
       <ul className="space-y-2">
         {SIDE_PROJECTS.map((project) => (
