@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
-import { useFrame, useThree } from '@react-three/fiber'
+import { useThree } from '@react-three/fiber'
 import { CameraControls } from '@react-three/drei'
 import { getCameraView, ViewId } from './panels'
 import { usePrefersReducedMotion } from './usePrefersReducedMotion'
@@ -42,7 +42,11 @@ export function CameraRig({ view, compact = false, freeMode = false }: CameraRig
   const fov = getFov(aspect)
   const compactDistance = compact ? (aspect > 1 ? COMPACT_DISTANCE_LANDSCAPE : COMPACT_DISTANCE_PORTRAIT) : undefined
 
+  // three.js objects are updated imperatively, as React Three Fiber intends
+  // (the rule reports both the effect and the assignment)
+  // eslint-disable-next-line react-hooks/immutability
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/immutability
     camera.fov = fov
     camera.updateProjectionMatrix()
   }, [camera, fov])
@@ -51,6 +55,10 @@ export function CameraRig({ view, compact = false, freeMode = false }: CameraRig
   useEffect(() => {
     const { position, target } = getCameraView(view, compactDistance)
     controls.current?.setLookAt(...position, ...target, !reducedMotion)
+    // The overview sits at an azimuth of exactly 180°, where the angle wraps around:
+    // without this, moving to the left panels (-132°) spins the camera the long way (~312°).
+    // camera-controls 3 no longer picks the shortest path by itself.
+    controls.current?.normalizeRotations()
     // Compact panel views: move the camera down (in its own frame) so the panel
     // shows in the upper part of the screen, above the bottom sheet.
     // camera-controls negates y: a positive focal offset moves the camera down.
@@ -61,10 +69,6 @@ export function CameraRig({ view, compact = false, freeMode = false }: CameraRig
     controls.current?.setFocalOffset(0, lift, 0, !reducedMotion)
   }, [view, compactDistance, fov, freeMode, reducedMotion])
 
-  // drei only calls update() while enabled, so drive transitions ourselves when input is locked
-  useFrame((_, delta) => {
-    if (!freeMode) controls.current?.update(delta)
-  })
-
+  // `enabled` only locks user input: drei (10+) calls update() every frame, so transitions still run
   return <CameraControls ref={controls} makeDefault enabled={freeMode} smoothTime={0.6} />
 }
