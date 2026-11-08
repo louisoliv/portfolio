@@ -199,7 +199,14 @@ export default function Scene({ initialLang, boot }: SceneProps) {
                   <PanelLabel panel={panel} code={code} label={t.cockpit.sections[panel.id]} highlighted={hoveredPanel === panel.id} />
                 )}
                 <PanelCard panel={panel} visible={!compact && view === panel.id}>
-                  <ImperialCard code={code} title={t.cockpit.sections[panel.id]} lang={lang} theme={cardTheme}>
+                  <ImperialCard
+                    code={code}
+                    title={t.cockpit.sections[panel.id]}
+                    lang={lang}
+                    theme={cardTheme}
+                    // Long sections scroll inside the card, which keeps a fixed maximum height
+                    className="max-h-[560px]"
+                  >
                     <Content lang={lang} />
                   </ImperialCard>
                 </PanelCard>
@@ -227,7 +234,7 @@ export default function Scene({ initialLang, boot }: SceneProps) {
             setHeroVisible(false)
           }}
         >
-          <HeroCardContent lang={lang} theme={cardTheme} stickyHeader onNavigate={goTo} />
+          <HeroCardContent lang={lang} theme={cardTheme} onNavigate={goTo} />
         </MobileSheet>
       )}
       {compact && booted && openPanel && OpenContent && (
@@ -237,9 +244,8 @@ export default function Scene({ initialLang, boot }: SceneProps) {
             title={t.cockpit.sections[openPanel.id]}
             lang={lang}
             theme={cardTheme}
-            stickyHeader
           >
-            <OpenContent lang={lang} compact />
+            <OpenContent lang={lang} />
           </ImperialCard>
         </MobileSheet>
       )}
